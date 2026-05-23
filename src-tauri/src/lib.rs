@@ -1,4 +1,4 @@
-// Force asset rebuild trigger: 2026-05-23-v4-bright-icon
+// Force asset rebuild trigger: 2026-05-23-v5-formal-icon
 use tauri::{AppHandle, Manager, Emitter};
 use std::sync::OnceLock;
 use std::sync::mpsc::Sender;
