@@ -2118,6 +2118,10 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // Web Output Two-way Font Size Slider & Number input Sync bindings
   bindSliderAndNumInput('input-web-size', 'input-web-size-num');
+
+  // Timer & Clock Overlay Two-way Font Size Slider & Number input Sync bindings
+  bindSliderAndNumInput('timer-font-size', 'timer-font-size-num');
+  bindSliderAndNumInput('clock-font-size', 'clock-font-size-num');
   
   // Web Output theme toggles
   const btnWebThemeDark = document.getElementById('btn-web-theme-dark');
@@ -2194,8 +2198,8 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // Real-time Live Settings listeners
   const liveInputs = [
-    'timer-font-size', 'timer-bg-opacity', 'timer-offset-x', 'timer-offset-y', 'timer-bg-color',
-    'clock-font-size', 'clock-bg-opacity', 'chk-clock-24h', 'chk-clock-seconds', 'clock-offset-x', 'clock-offset-y', 'clock-bg-color',
+    'timer-font-size', 'timer-font-size-num', 'timer-bg-opacity', 'timer-offset-x', 'timer-offset-y', 'timer-bg-color',
+    'clock-font-size', 'clock-font-size-num', 'clock-bg-opacity', 'chk-clock-24h', 'chk-clock-seconds', 'clock-offset-x', 'clock-offset-y', 'clock-bg-color',
     'notify-scale', 'input-notify-scale-num', 'chk-notify-blur', 'notify-bg-opacity', 'notify-offset-x', 'notify-offset-y', 'notify-bg-color',
     'chk-chime-warning', 'input-chime-warning-time', 'chk-chime-tension', 'input-chime-tension-time', 'chk-chime-urgent', 'input-chime-urgent-time', 'chime-volume',
     'select-chime-warning-sound', 'color-chime-warning-color', 'chk-chime-warning-blink',
@@ -2401,7 +2405,9 @@ function syncPrefUIState() {
 
   // Sync sliders
   setSliderVal('timer-font-size', 'lbl-timer-font-size', state.preferences.timer.fontSize !== undefined ? state.preferences.timer.fontSize : 45);
+  setSliderAndNumVal('timer-font-size', 'timer-font-size-num', state.preferences.timer.fontSize !== undefined ? state.preferences.timer.fontSize : 45);
   setSliderVal('clock-font-size', 'lbl-clock-font-size', state.preferences.clock.fontSize !== undefined ? state.preferences.clock.fontSize : 40);
+  setSliderAndNumVal('clock-font-size', 'clock-font-size-num', state.preferences.clock.fontSize !== undefined ? state.preferences.clock.fontSize : 40);
   
   // Sync timer font family grid active chip
   const currentFont = state.preferences.timer.fontFamily || 'Outfit';

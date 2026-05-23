@@ -286,7 +286,13 @@
           <fieldset class="pref-group">
             <legend class="section-title">Geometry Fine-tuning</legend>
             <div class="slider-control">
-              <label for="timer-font-size" class="slider-label">Timer Font Size (<span id="lbl-timer-font-size">45</span>px)</label>
+              <div class="slider-label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="timer-font-size" class="slider-label" style="margin-bottom: 0;">Timer Font Size (<span id="lbl-timer-font-size">45</span>px)</label>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <input type="number" id="timer-font-size-num" min="20" max="250" value="45" class="pref-num-input" style="width: 60px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 0.9em; text-align: center;" />
+                  <span style="font-size: 0.9em; color: var(--text-muted);">px</span>
+                </div>
+              </div>
               <input type="range" id="timer-font-size" min="20" max="250" step="5" value="45" />
             </div>
 
@@ -380,7 +386,13 @@
           <fieldset class="pref-group">
             <legend class="section-title">Geometry Fine-tuning</legend>
             <div class="slider-control">
-              <label for="clock-font-size" class="slider-label">Clock Font Size (<span id="lbl-clock-font-size">40</span>px)</label>
+              <div class="slider-label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="clock-font-size" class="slider-label" style="margin-bottom: 0;">Clock Font Size (<span id="lbl-clock-font-size">40</span>px)</label>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <input type="number" id="clock-font-size-num" min="20" max="250" value="40" class="pref-num-input" style="width: 60px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 0.9em; text-align: center;" />
+                  <span style="font-size: 0.9em; color: var(--text-muted);">px</span>
+                </div>
+              </div>
               <input type="range" id="clock-font-size" min="20" max="250" step="5" value="40" />
             </div>
 
