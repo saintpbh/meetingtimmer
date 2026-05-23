@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IP Timer Overlay - Premium Remote Viewer</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#030611">
+  <link rel="apple-touch-icon" href="/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400;600;800&family=Bebas+Neue&family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -454,9 +457,205 @@
     .blink-active {
       animation: neon-breath 1.2s infinite ease-in-out;
     }
+
+    /* ==========================================
+       Frosted Glass PWA Scanner Overlay Styling
+       ========================================== */
+    #scanner-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, rgba(10, 15, 36, 0.95) 0%, rgba(3, 6, 17, 0.98) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      padding: 24px;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    #scanner-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .scanner-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .scanner-logo {
+      font-size: 3rem;
+      animation: pulse-glow 2s infinite alternate;
+    }
+
+    .scanner-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .scanner-status {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.6);
+      min-height: 24px;
+      line-height: 1.5;
+    }
+
+    /* Beautiful Scanning Radar / Pulse */
+    .radar-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    .radar-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid var(--theme-accent);
+      border-radius: 50%;
+      opacity: 0;
+      animation: radar-pulse 2s infinite linear;
+    }
+
+    .radar-circle:nth-child(2) {
+      animation-delay: 0.6s;
+    }
+
+    .radar-circle:nth-child(3) {
+      animation-delay: 1.2s;
+    }
+
+    .radar-core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      background: var(--theme-accent);
+      border-radius: 50%;
+      box-shadow: 0 0 20px var(--theme-accent);
+    }
+
+    /* Manual IP Input Form */
+    .manual-ip-box {
+      margin-top: 16px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 20px;
+    }
+
+    .manual-ip-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .manual-ip-input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .manual-ip-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 10px 16px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .manual-ip-input:focus {
+      border-color: var(--theme-accent);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+    }
+
+    .manual-ip-btn {
+      background: var(--theme-accent);
+      border: none;
+      border-radius: 12px;
+      padding: 0 20px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .manual-ip-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    @keyframes radar-pulse {
+      0% { transform: scale(0.2); opacity: 1; }
+      100% { transform: scale(1.2); opacity: 0; }
+    }
+
+    @keyframes pulse-glow {
+      0% { filter: drop-shadow(0 0 2px var(--theme-accent)); }
+      100% { filter: drop-shadow(0 0 15px var(--theme-accent)); }
+    }
   </style>
 </head>
 <body class="theme-cyber-blue">
+  <!-- PWA 로컬 네트워크 자동 스캐너 오버레이 -->
+  <div id="scanner-overlay" class="show">
+    <div class="scanner-card">
+      <div class="scanner-logo">⏱️</div>
+      <div class="scanner-title">서버 자동 검색 중</div>
+      <div class="radar-container">
+        <div class="radar-circle"></div>
+        <div class="radar-circle"></div>
+        <div class="radar-circle"></div>
+        <div class="radar-core"></div>
+      </div>
+      <div id="scanner-status" class="scanner-status">동일 네트워크에서 타이머 서버를 찾는 중입니다...</div>
+      
+      <!-- 수동 IP 입력 폴백 -->
+      <div class="manual-ip-box">
+        <div class="manual-ip-label">서버를 찾을 수 없나요? 직접 입력하세요</div>
+        <div class="manual-ip-input-group">
+          <input type="text" id="input-manual-ip" class="manual-ip-input" placeholder="예: 192.168.0.15" />
+          <button id="btn-manual-ip" class="manual-ip-btn">연결</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 연결 대기 상태 캡슐 -->
   <div id="disconnect-overlay">
     <div class="spinner"></div>
@@ -714,26 +913,93 @@
       }
     }
 
-    // 💡 연결 끊김 자동 복구 웹소켓 클라이언트 엔진
+    // ==========================================
+    // 💡 Progressive Web App (PWA) Setup
+    // ==========================================
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((reg) => {
+          console.log('[PWA] ServiceWorker registered scope:', reg.scope);
+        }).catch((err) => {
+          console.error('[PWA] ServiceWorker registration failed:', err);
+        });
+      });
+    }
+
+    // XOR Decryption Handshake Handler
+    function decryptIdentity(base64Ciphertext) {
+      const key = "Antigravity2026MeetingTimerPrivateCipherKey";
+      try {
+        const binaryString = atob(base64Ciphertext);
+        let decrypted = "";
+        for (let i = 0; i < binaryString.length; i++) {
+          const charCode = binaryString.charCodeAt(i);
+          const keyChar = key.charCodeAt(i % key.length);
+          decrypted += String.fromCharCode(charCode ^ keyChar);
+        }
+        return decrypted;
+      } catch (e) {
+        return "";
+      }
+    }
+
+    // 💡 연결 끊김 자동 복구 및 로컬 스캐너 엔진
     let ws = null;
     let reconnectTimeout = null;
+    let isScanning = false;
+    let scanController = null;
+    let activeHost = localStorage.getItem('timer_server_host') || window.location.host;
 
-    function connect() {
+    const scannerOverlayEl = document.getElementById('scanner-overlay');
+    const scannerStatusEl = document.getElementById('scanner-status');
+    const inputManualIpEl = document.getElementById('input-manual-ip');
+    const btnManualIpEl = document.getElementById('btn-manual-ip');
+
+    function setScannerStatus(msg) {
+      scannerStatusEl.textContent = msg;
+    }
+
+    function showScannerOverlay(show) {
+      if (show) {
+        scannerOverlayEl.classList.add('show');
+      } else {
+        scannerOverlayEl.classList.remove('show');
+      }
+    }
+
+    // Direct WebSocket connection
+    function connect(targetHost) {
       if (ws) {
-        ws.close();
+        try { ws.close(); } catch(e) {}
       }
 
-      disconnectEl.querySelector('span').textContent = "서버 연결 시도 중...";
+      const hostToConnect = targetHost || activeHost || window.location.host;
+      disconnectEl.querySelector('span').textContent = `${hostToConnect} 연결 시도 중...`;
       disconnectEl.classList.add('show');
 
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
+      const isSecure = window.location.protocol === 'https:';
+      const wsProtocol = isSecure ? 'wss:' : 'ws:';
       
+      // If we are connecting to localhost or custom IP, construct ws url
+      const wsUrl = `${wsProtocol}//${hostToConnect}/ws`;
+      console.log(`[WebViewer] Attempting WebSocket connection to: ${wsUrl}`);
+
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
-        console.log('[WebViewer] Connected to WebSocket channel.');
+        console.log(`[WebViewer] Successfully connected to: ${hostToConnect}`);
+        activeHost = hostToConnect;
+        localStorage.setItem('timer_server_host', hostToConnect);
+        
+        // Hide overlays
         disconnectEl.classList.remove('show');
+        showScannerOverlay(false);
+        isScanning = false;
+        
+        if (scanController) {
+          scanController.abort();
+        }
+        
         if (reconnectTimeout) {
           clearTimeout(reconnectTimeout);
           reconnectTimeout = null;
@@ -755,31 +1021,25 @@
           timerState.webPreferences = webPrefs;
 
           // 💡 메인 PC 웹출력 설정 연동
-          
-          // 1. 활성화 여부
           if (webPrefs.enabled === false) {
             document.getElementById('viewer-container').style.display = 'none';
           } else {
             document.getElementById('viewer-container').style.display = 'flex';
           }
 
-          // 2. 메인 창 강제 지시 폰트 패밀리
           if (webPrefs.fontFamily) {
             timerTextEl.style.fontFamily = `'${webPrefs.fontFamily}', sans-serif`;
           }
 
-          // 3. 메인 창 지시 폰트 사이즈 (1920px 해상도 기준 vw 변환)
           if (webPrefs.fontSize) {
             const fontVw = (webPrefs.fontSize / 1920) * 100;
             timerTextEl.style.fontSize = `${fontVw}vw`;
           }
 
-          // 4. 메인 창이 지시한 배경 모드가 'transparent' 일 때만 OBS 투명 배경 강제 설정
           if (webPrefs.theme === 'transparent') {
             document.body.className = '';
             document.body.classList.add('theme-transparent-overlay');
           } else if (bgMode !== 'transparent') {
-            // 그 외 일반 모드 시 유저가 웹뷰어에서 직접 선택한 프리미엄 테마 적용 유지
             applyThemeClass(selectedTheme);
           }
 
@@ -796,23 +1056,197 @@
       };
 
       ws.onclose = () => {
-        console.warn('[WebViewer] WebSocket Connection closed. Retrying...');
-        disconnectEl.querySelector('span').textContent = "연결이 끊어졌습니다. 재연결 시도 중...";
+        console.warn('[WebViewer] WebSocket disconnected.');
+        disconnectEl.querySelector('span').textContent = "연결이 끊어졌습니다. 서버 탐색 중...";
         disconnectEl.classList.add('show');
         
+        // Try reconnecting to the same host first
         if (!reconnectTimeout) {
-          reconnectTimeout = setTimeout(connect, 1500);
+          reconnectTimeout = setTimeout(() => {
+            reconnectTimeout = null;
+            // If the active host is unresponsive, trigger scanning
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+              connect(activeHost);
+              // Wait 3 seconds, if still disconnected, start local network scanning!
+              setTimeout(() => {
+                if (!ws || ws.readyState !== WebSocket.OPEN) {
+                  startNetworkScan();
+                }
+              }, 3000);
+            }
+          }, 2000);
         }
       };
 
       ws.onerror = (err) => {
-        console.error('[WebViewer] WebSocket Error:', err);
+        console.error('[WebViewer] WebSocket error:', err);
         ws.close();
       };
     }
 
+    // 💡 100% 비동기 고속 로컬 네트워크 스캐너
+    async function checkIpForServer(ip, port, signal) {
+      const host = `${ip}:${port}`;
+      const url = `http://${host}/scan`;
+      
+      try {
+        const response = await fetch(url, { signal });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.identity === "MeetingTimerServer" && data.token) {
+            const decrypted = decryptIdentity(data.token);
+            if (decrypted.startsWith("MeetingTimerServer_bongpark_")) {
+              return host;
+            }
+          }
+        }
+      } catch (err) {
+        // Unresponsive host
+      }
+      return null;
+    }
+
+    async function startNetworkScan() {
+      if (isScanning) return;
+      isScanning = true;
+      showScannerOverlay(true);
+      setScannerStatus("동일 네트워크 대역에서 타이머 서버를 감지하고 있습니다...");
+
+      if (scanController) scanController.abort();
+      scanController = new AbortController();
+      const signal = scanController.signal;
+
+      const port = "3003";
+      const baseSubnets = ['192.168.0', '192.168.1', '10.0.0'];
+
+      // Extract subnet of last connected host
+      if (activeHost) {
+        const lastIp = activeHost.split(':')[0];
+        const lastIpMatch = lastIp.match(/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}$/);
+        if (lastIpMatch && !baseSubnets.includes(lastIpMatch[1])) {
+          baseSubnets.unshift(lastIpMatch[1]);
+        }
+      }
+
+      // Extract subnet of current location
+      const currentHost = window.location.hostname;
+      const curMatch = currentHost.match(/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}$/);
+      if (curMatch && !baseSubnets.includes(curMatch[1])) {
+        baseSubnets.unshift(curMatch[1]);
+      }
+
+      const subnets = [...new Set(baseSubnets)];
+      let serverFound = false;
+
+      for (const subnet of subnets) {
+        if (serverFound || signal.aborted) break;
+        setScannerStatus(`네트워크 검색 중: ${subnet}.x...`);
+
+        // Batch scan (50 at a time) to prevent network socket choking
+        const batchSize = 50;
+        for (let i = 1; i <= 254; i += batchSize) {
+          if (serverFound || signal.aborted) break;
+          const promises = [];
+
+          for (let j = 0; j < batchSize && (i + j) <= 254; j++) {
+            const ip = `${subnet}.${i + j}`;
+            
+            // Timeout check for individual IP to keep scanner snappy
+            const ipController = new AbortController();
+            const ipSignal = ipController.signal;
+            const ipTimeout = setTimeout(() => ipController.abort(), 800);
+            
+            promises.push(
+              checkIpForServer(ip, port, ipSignal)
+                .then(host => {
+                  clearTimeout(ipTimeout);
+                  if (host && !serverFound) {
+                    serverFound = true;
+                    scanController.abort(); // Cancel other ongoing scans
+                    setScannerStatus("타이머 서버 발견! 연동 연결 수립 중...");
+                    setTimeout(() => connect(host), 500);
+                  }
+                })
+                .catch(() => clearTimeout(ipTimeout))
+            );
+          }
+
+          await Promise.all(promises);
+          // Breathe space for browser loop
+          await new Promise(r => setTimeout(r, 80));
+        }
+      }
+
+      if (!serverFound && !signal.aborted) {
+        isScanning = false;
+        setScannerStatus("타이머 서버를 감지하지 못했습니다. 서버가 실행 중인지 확인하거나 수동으로 IP를 입력하세요.");
+      }
+    }
+
+    // Manual connection triggers
+    btnManualIpEl.addEventListener('click', () => {
+      let val = inputManualIpEl.value.trim();
+      if (!val) return;
+      
+      // Auto-append port if not specified
+      if (!val.includes(':')) {
+        val = `${val}:3003`;
+      }
+      
+      setScannerStatus(`수동 IP (${val}) 검증 및 연결 시도 중...`);
+      
+      // Check the host
+      const ip = val.split(':')[0];
+      const port = val.split(':')[1] || "3003";
+      
+      checkIpForServer(ip, port, null).then(verifiedHost => {
+        if (verifiedHost) {
+          setScannerStatus("수동 IP 검증 성공! 연결 중...");
+          connect(verifiedHost);
+        } else {
+          setScannerStatus("입력한 주소에서 올바른 타이머 서버를 찾을 수 없습니다. 다시 확인해 주세요.");
+        }
+      });
+    });
+
+    inputManualIpEl.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        btnManualIpEl.click();
+      }
+    });
+
+    // Startup Initializer
+    function initViewer() {
+      const currentHost = window.location.host;
+      
+      disconnectEl.querySelector('span').textContent = "연결을 초기화하는 중...";
+      disconnectEl.classList.add('show');
+      
+      // Test if current host is running the server (to bypass scanner if launched directly)
+      checkIpForServer(window.location.hostname, window.location.port || "3003", null).then(verified => {
+        if (verified) {
+          connect(verified);
+        } else {
+          // If not directly accessible, try the last cached IP
+          if (activeHost && activeHost !== currentHost) {
+            const lastIp = activeHost.split(':')[0];
+            const lastPort = activeHost.split(':')[1] || "3003";
+            checkIpForServer(lastIp, lastPort, null).then(lastVerified => {
+              if (lastVerified) {
+                connect(lastVerified);
+              } else {
+                startNetworkScan();
+              }
+            });
+          } else {
+            startNetworkScan();
+          }
+        }
+      });
+    }
+
     // 기동
-    connect();
+    initViewer();
     tick();
   </script>
 </body>

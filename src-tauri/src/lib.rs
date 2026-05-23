@@ -103,6 +103,56 @@ fn get_local_ip() -> Result<String, String> {
 }
 
 // === Embedded HTTP & WebSocket Server Handlers for Local Network Web Viewers ===
+fn get_encrypted_identity() -> String {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    let plaintext = format!("MeetingTimerServer_bongpark_{}", timestamp);
+    
+    let key = b"Antigravity2026MeetingTimerPrivateCipherKey";
+    let bytes = plaintext.as_bytes();
+    let mut encrypted = Vec::with_capacity(bytes.len());
+    for (i, &b) in bytes.iter().enumerate() {
+        let key_char = key[i % key.len()];
+        encrypted.push(b ^ key_char);
+    }
+    
+    use base64::Engine;
+    base64::prelude::BASE64_STANDARD.encode(encrypted)
+}
+
+async fn handle_scan() -> impl axum::response::IntoResponse {
+    let token = get_encrypted_identity();
+    let payload = serde_json::json!({
+        "identity": "MeetingTimerServer",
+        "token": token
+    });
+    axum::response::Json(payload)
+}
+
+async fn handle_manifest_json() -> impl axum::response::IntoResponse {
+    axum::response::Response::builder()
+        .header("content-type", "application/json; charset=utf-8")
+        .body(axum::body::Body::from(include_str!("manifest.json")))
+        .unwrap()
+}
+
+async fn handle_sw_js() -> impl axum::response::IntoResponse {
+    axum::response::Response::builder()
+        .header("content-type", "application/javascript; charset=utf-8")
+        .body(axum::body::Body::from(include_str!("sw.js")))
+        .unwrap()
+}
+
+async fn handle_icon_png() -> impl axum::response::IntoResponse {
+    axum::response::Response::builder()
+        .header("content-type", "image/png")
+        .body(axum::body::Body::from(include_bytes!("../icons/icon.png").to_vec()))
+        .unwrap()
+}
+
 async fn handle_viewer_html() -> impl axum::response::IntoResponse {
     axum::response::Html(include_str!("viewer.html"))
 }
@@ -341,6 +391,10 @@ pub fn run() {
                 
                 let app = Router::new()
                     .route("/", get(handle_viewer_html))
+                    .route("/scan", get(handle_scan))
+                    .route("/manifest.json", get(handle_manifest_json))
+                    .route("/sw.js", get(handle_sw_js))
+                    .route("/icon.png", get(handle_icon_png))
                     .route("/ws", get(handle_ws_upgrade))
                     .layer(CorsLayer::permissive())
                     .with_state(ws_tx);
