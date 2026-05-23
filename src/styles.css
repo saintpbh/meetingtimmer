@@ -2127,4 +2127,31 @@ body.theme-rose .btn-ppt-action:hover { background: hsla(348, 75%, 62%, 0.1); }
   animation: pulse-status-dot 1.2s infinite ease-in-out;
 }
 
+/* 💡 Premium Manual Number Input Fields high contrast override */
+.pref-num-input {
+  width: 65px !important;
+  background: rgba(8, 12, 21, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  padding: 4px 6px !important;
+  font-family: var(--font-title);
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  text-align: center;
+  outline: none;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  transition: all var(--transition-fast) ease-in-out;
+}
+
+.pref-num-input:hover {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.pref-num-input:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 10px hsla(217, 91%, 60%, 0.35), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+  background: rgba(8, 12, 21, 0.95) !important;
+}
+
 

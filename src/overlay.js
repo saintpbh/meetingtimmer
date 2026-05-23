@@ -105,10 +105,6 @@ window.addEventListener('DOMContentLoaded', () => {
   setInterval(updateLocalClockTime, 1000);
   updateLocalClockTime();
   
-  // DPI 배율 인자 동적 보정 틱 추가 (1초마다 devicePixelRatio를 체크하여 폰트/레이아웃 100% 핏 보장)
-  setInterval(checkDpiAdjustment, 1000);
-  checkDpiAdjustment();
-  
   // Escape key handler to deactivate overlay from overlay scope
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -678,7 +674,34 @@ function updateOverlayState(data) {
     noticeEl.style.setProperty('--offset-x', `${ntX}px`);
     noticeEl.style.setProperty('--offset-y', `${ntY}px`);
   }
-  noticeEl.style.setProperty('--scale', noticeScale);
+  
+  // Scale the notice board using font size instead of CSS transform: scale to prevent blurriness
+  const noticeBaseFontSize = Math.round(16 * noticeScale);
+  noticeEl.style.fontSize = `${noticeBaseFontSize}px`;
+  
+  // Proportional dynamic padding, borders, gaps, max-width
+  const nVerticalPadding = Math.max(6, Math.round(noticeBaseFontSize * 0.85));
+  const nHorizontalPadding = Math.max(10, Math.round(noticeBaseFontSize * 1.5));
+  noticeEl.style.padding = `${nVerticalPadding}px ${nHorizontalPadding}px`;
+  
+  const nBorderRadius = Math.max(8, Math.round(noticeBaseFontSize * 1.1));
+  noticeEl.style.borderRadius = `${nBorderRadius}px`;
+  
+  noticeEl.style.gap = `${Math.round(noticeBaseFontSize * 0.85)}px`;
+  noticeEl.style.maxWidth = `${Math.round(noticeBaseFontSize * 30)}px`;
+  
+  // Update inner text and icon sizes proportionally to stay sharp
+  const noticeTextElInside = noticeEl.querySelector('.overlay-notice-text');
+  const noticeIconElInside = noticeEl.querySelector('.overlay-notice-icon');
+  if (noticeTextElInside) {
+    noticeTextElInside.style.fontSize = `${noticeBaseFontSize}px`;
+  }
+  if (noticeIconElInside) {
+    noticeIconElInside.style.fontSize = `${Math.round(noticeBaseFontSize * 1.37)}px`;
+  }
+  
+  // Neutralize the CSS transform scale variable to avoid double scaling or blurriness
+  noticeEl.style.setProperty('--scale', '1');
 
   // Notice container background alpha blend
   const noticeRgb = hexToRgb(noticeBgColor);
@@ -802,18 +825,4 @@ function arrayBufferToBase64(buffer) {
   return btoa(binary);
 }
 
-// DPI (Scale Factor) Mismatch Dynamic Corrector
-let lastDPI = 1.0;
-function checkDpiAdjustment() {
-  const currentDPI = window.devicePixelRatio || 1.0;
-  if (Math.abs(currentDPI - lastDPI) > 0.01) {
-    console.log(`[DPI Sync] devicePixelRatio updated: ${lastDPI} -> ${currentDPI}`);
-    lastDPI = currentDPI;
-    
-    // devicePixelRatio 배율에 비례하여 body의 zoom을 역보정
-    // 외부 모니터의 Retina(2x) ↔ FHD(1x) 이동 시 UI 크기가 두 배 비대해지거나 틀어지는 문제 원천 차단
-    if (document.body) {
-      document.body.style.zoom = `${1.0 / currentDPI}`;
-    }
-  }
-}
+
