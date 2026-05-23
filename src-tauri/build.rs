@@ -11,6 +11,7 @@ fn main() {
     println!("cargo:rerun-if-changed=src/viewer.html");
     println!("cargo:rerun-if-changed=src/manifest.json");
     println!("cargo:rerun-if-changed=src/sw.js");
+    println!("cargo:rerun-if-changed=icons/icon.png");
 
     tauri_build::build()
 }

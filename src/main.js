@@ -181,25 +181,151 @@ const state = {
   monitors: []
 };
 
-// Web Audio API Synthesis Engine
+// Web Audio API Synthesis Engine & IndexedDB Persistence
 let audioCtx = null;
-let chimeBuffer = null;
+
+// Default Chime Buffers (pre-loaded WAV)
+let warningChimeBuffer = null;
+let tensionChimeBuffer = null;
+let urgentChimeBuffer = null;
+
+// Custom User-Uploaded Chime Buffers
+let customWarningChimeBuffer = null;
+let customTensionChimeBuffer = null;
+let customUrgentChimeBuffer = null;
+
+// ⚡ Chunked ArrayBuffer-to-Base64 Converter (prevents Call Stack Exceeded on large files)
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const chunk = 8192;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return window.btoa(binary);
+}
+
+// ⚡ Base64-to-ArrayBuffer Converter
+function base64ToArrayBuffer(base64) {
+  const binaryString = window.atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+// 🗄️ IndexedDB Core Interface for Audio Persistence
+const DB_NAME = 'PorkTimerDB';
+const STORE_NAME = 'audio_assets';
+
+function getDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = (e) => resolve(e.target.result);
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+async function saveCustomAudio(id, base64Data, filename) {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.put({ id, data: base64Data, filename });
+    request.onsuccess = () => resolve();
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+async function loadCustomAudio(id) {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.get(id);
+    request.onsuccess = (e) => resolve(e.target.result);
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
 
 async function loadChimeAsset() {
   try {
-    const response = await fetch('assets/chime.wav');
-    const arrayBuffer = await response.arrayBuffer();
     initAudio();
-    audioCtx.decodeAudioData(arrayBuffer)
+    
+    // 1. Load Default WAV assets
+    // Default Warning: assets/chime.wav
+    fetch('assets/chime.wav')
+      .then(res => res.arrayBuffer())
+      .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
       .then(decoded => {
-        chimeBuffer = decoded;
-        console.log("Premium Chime WAV asset loaded successfully.");
+        warningChimeBuffer = decoded;
+        console.log("Default Warning Chime (chime.wav) loaded successfully.");
       })
-      .catch(err => {
-        console.error("Audio decoding failed: ", err);
-      });
+      .catch(err => console.warn("Failed to load default warning chime: ", err));
+
+    // Default Tension: assets/30초.wav (Set default 30s tension chime as 30초.wav)
+    fetch('assets/30초.wav')
+      .then(res => res.arrayBuffer())
+      .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+      .then(decoded => {
+        tensionChimeBuffer = decoded;
+        console.log("Default Tension Chime (30초.wav) loaded successfully.");
+      })
+      .catch(err => console.warn("Failed to load default tension chime: ", err));
+
+    // Default Urgent: assets/chime.wav
+    fetch('assets/chime.wav')
+      .then(res => res.arrayBuffer())
+      .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+      .then(decoded => {
+        urgentChimeBuffer = decoded;
+        console.log("Default Urgent Chime (chime.wav) loaded successfully.");
+      })
+      .catch(err => console.warn("Failed to load default urgent chime: ", err));
+
+    // 2. Load Custom Chimes from IndexedDB
+    loadCustomChimeFromDB('warning');
+    loadCustomChimeFromDB('tension');
+    loadCustomChimeFromDB('urgent');
+
   } catch (err) {
-    console.warn("Failed to pre-load chime asset: ", err);
+    console.warn("Failed to initialize chime assets pre-loading: ", err);
+  }
+}
+
+async function loadCustomChimeFromDB(type) {
+  try {
+    const asset = await loadCustomAudio(`${type}_chime`);
+    if (asset && asset.data) {
+      const arrayBuffer = base64ToArrayBuffer(asset.data);
+      initAudio();
+      audioCtx.decodeAudioData(arrayBuffer)
+        .then(decoded => {
+          if (type === 'warning') customWarningChimeBuffer = decoded;
+          else if (type === 'tension') customTensionChimeBuffer = decoded;
+          else if (type === 'urgent') customUrgentChimeBuffer = decoded;
+          
+          console.log(`Custom ${type} chime decoded and loaded successfully from IndexedDB.`);
+          
+          const filename = asset.filename || 'Custom File';
+          state.preferences.chime[`${type}Filename`] = filename;
+          const lbl = document.getElementById(`lbl-chime-${type}-file`);
+          if (lbl) lbl.textContent = filename;
+        })
+        .catch(err => {
+          console.error(`Failed to decode custom ${type} chime:`, err);
+        });
+    }
+  } catch (err) {
+    console.warn(`No custom ${type} chime stored in DB or load failed.`);
   }
 }
 
@@ -212,7 +338,7 @@ function initAudio() {
   }
 }
 
-// Syntehsize Perfect Double Bell tone natively or play custom WAV
+// Play synthetic chime engine or WAV (default or custom)
 function playSynthChime(type) {
   try {
     initAudio();
@@ -233,11 +359,38 @@ function playSynthChime(type) {
       return;
     }
     
-    // Play custom pre-loaded WAV chime if preference is 'wav'
-    if (soundPref === 'wav') {
-      if (chimeBuffer) {
+    // Play custom user-uploaded WAV chime if preference is 'custom'
+    if (soundPref === 'custom') {
+      let targetBuffer = null;
+      if (type === 'warning' || type === '60') targetBuffer = customWarningChimeBuffer;
+      else if (type === 'tension' || type === '30') targetBuffer = customTensionChimeBuffer;
+      else if (type === 'urgent' || type === '10') targetBuffer = customUrgentChimeBuffer;
+      
+      if (targetBuffer) {
         const source = audioCtx.createBufferSource();
-        source.buffer = chimeBuffer;
+        source.buffer = targetBuffer;
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(volumePercentage, audioCtx.currentTime);
+        source.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        source.start(0);
+        return;
+      } else {
+        console.warn(`[Chime] Custom WAV requested for ${type} but not yet loaded. Falling back to default WAV.`);
+        soundPref = 'wav'; // Fallback to standard wav
+      }
+    }
+    
+    // Play default pre-loaded WAV chime if preference is 'wav'
+    if (soundPref === 'wav') {
+      let targetBuffer = null;
+      if (type === 'warning' || type === '60') targetBuffer = warningChimeBuffer;
+      else if (type === 'tension' || type === '30') targetBuffer = tensionChimeBuffer;
+      else if (type === 'urgent' || type === '10') targetBuffer = urgentChimeBuffer;
+      
+      if (targetBuffer) {
+        const source = audioCtx.createBufferSource();
+        source.buffer = targetBuffer;
         
         const gainNode = audioCtx.createGain();
         gainNode.gain.setValueAtTime(volumePercentage, audioCtx.currentTime);
@@ -247,7 +400,7 @@ function playSynthChime(type) {
         source.start(0);
         return;
       } else {
-        console.warn(`[Chime] WAV requested but not loaded. Falling back to synthetic.`);
+        console.warn(`[Chime] Default WAV requested for ${type} but not loaded. Falling back to synthetic.`);
       }
     }
     
@@ -1657,6 +1810,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // Pre-load custom WAV chime asset
   loadChimeAsset();
   
+  // Set up custom user-uploaded chime file change handlers
+  setupCustomChimeUploads();
+  
   // 사용자의 첫 터치/클릭 조작 시 Web Audio 컨텍스트 사전 활성화 (Autoplay Policy 잠금 선제 해제 및 초기 재생 렉 차단)
   const initAudioWarmup = () => {
     initAudio();
@@ -2531,6 +2687,15 @@ function syncPrefUIState() {
   document.getElementById('color-chime-warning-color').value = state.preferences.chime.warningColor || '#eab308';
   document.getElementById('chk-chime-warning-blink').checked = !!state.preferences.chime.warningBlink;
   document.getElementById('chime-warning-details').classList.toggle('disabled', !enableWarning);
+  
+  const warningFileControl = document.getElementById('chime-warning-file-control');
+  if (warningFileControl) {
+    warningFileControl.style.display = (state.preferences.chime.warningSound === 'custom') ? 'block' : 'none';
+  }
+  const lblWarningFile = document.getElementById('lbl-chime-warning-file');
+  if (lblWarningFile) {
+    lblWarningFile.textContent = state.preferences.chime.warningFilename || 'None';
+  }
 
   const enableTension = state.preferences.chime.enableTension;
   document.getElementById('chk-chime-tension').checked = enableTension;
@@ -2540,6 +2705,15 @@ function syncPrefUIState() {
   document.getElementById('chk-chime-tension-blink').checked = !!state.preferences.chime.tensionBlink;
   document.getElementById('chime-tension-details').classList.toggle('disabled', !enableTension);
 
+  const tensionFileControl = document.getElementById('chime-tension-file-control');
+  if (tensionFileControl) {
+    tensionFileControl.style.display = (state.preferences.chime.tensionSound === 'custom') ? 'block' : 'none';
+  }
+  const lblTensionFile = document.getElementById('lbl-chime-tension-file');
+  if (lblTensionFile) {
+    lblTensionFile.textContent = state.preferences.chime.tensionFilename || 'None';
+  }
+
   const enableUrgent = state.preferences.chime.enableUrgent;
   document.getElementById('chk-chime-urgent').checked = enableUrgent;
   document.getElementById('input-chime-urgent-time').value = state.preferences.chime.urgentTime;
@@ -2547,6 +2721,15 @@ function syncPrefUIState() {
   document.getElementById('color-chime-urgent-color').value = state.preferences.chime.urgentColor || '#ef4444';
   document.getElementById('chk-chime-urgent-blink').checked = !!state.preferences.chime.urgentBlink;
   document.getElementById('chime-urgent-details').classList.toggle('disabled', !enableUrgent);
+
+  const urgentFileControl = document.getElementById('chime-urgent-file-control');
+  if (urgentFileControl) {
+    urgentFileControl.style.display = (state.preferences.chime.urgentSound === 'custom') ? 'block' : 'none';
+  }
+  const lblUrgentFile = document.getElementById('lbl-chime-urgent-file');
+  if (lblUrgentFile) {
+    lblUrgentFile.textContent = state.preferences.chime.urgentFilename || 'None';
+  }
 
   // Sync Web Viewer Settings
   const webPrefs = state.preferences.web || {};
@@ -2746,6 +2929,11 @@ function packAndSavePreferences(closeDialog = false, resizeWindow = false, immed
   state.preferences.chime.warningSound = document.getElementById('select-chime-warning-sound').value;
   state.preferences.chime.warningColor = document.getElementById('color-chime-warning-color').value;
   state.preferences.chime.warningBlink = document.getElementById('chk-chime-warning-blink').checked;
+  
+  const warningFileControl = document.getElementById('chime-warning-file-control');
+  if (warningFileControl) {
+    warningFileControl.style.display = (state.preferences.chime.warningSound === 'custom') ? 'block' : 'none';
+  }
 
   state.preferences.chime.enableTension = document.getElementById('chk-chime-tension').checked;
   state.preferences.chime.tensionTime = parseInt(document.getElementById('input-chime-tension-time').value) || 0;
@@ -2753,11 +2941,21 @@ function packAndSavePreferences(closeDialog = false, resizeWindow = false, immed
   state.preferences.chime.tensionColor = document.getElementById('color-chime-tension-color').value;
   state.preferences.chime.tensionBlink = document.getElementById('chk-chime-tension-blink').checked;
 
+  const tensionFileControl = document.getElementById('chime-tension-file-control');
+  if (tensionFileControl) {
+    tensionFileControl.style.display = (state.preferences.chime.tensionSound === 'custom') ? 'block' : 'none';
+  }
+
   state.preferences.chime.enableUrgent = document.getElementById('chk-chime-urgent').checked;
   state.preferences.chime.urgentTime = parseInt(document.getElementById('input-chime-urgent-time').value) || 0;
   state.preferences.chime.urgentSound = document.getElementById('select-chime-urgent-sound').value;
   state.preferences.chime.urgentColor = document.getElementById('color-chime-urgent-color').value;
   state.preferences.chime.urgentBlink = document.getElementById('chk-chime-urgent-blink').checked;
+
+  const urgentFileControl = document.getElementById('chime-urgent-file-control');
+  if (urgentFileControl) {
+    urgentFileControl.style.display = (state.preferences.chime.urgentSound === 'custom') ? 'block' : 'none';
+  }
 
   state.preferences.chime.volume = parseInt(document.getElementById('chime-volume').value);
   
@@ -2852,5 +3050,59 @@ function packAndSavePreferences(closeDialog = false, resizeWindow = false, immed
     // Sync size on closing dialog window to prevent layout truncation
     fitMainWindowToContent();
   }
+}
+
+// 📂 Binds dynamic custom audio file loaders and triggers base64 IndexedDB updates
+function setupCustomChimeUploads() {
+  ['warning', 'tension', 'urgent'].forEach(type => {
+    const fileInput = document.getElementById(`input-chime-${type}-file`);
+    if (fileInput) {
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        console.log(`User uploaded custom audio for ${type}: ${file.name}`);
+        
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          try {
+            const arrayBuffer = event.target.result;
+            
+            // 1. Decode locally for instant latency-free preview/execution
+            initAudio();
+            // Clone buffer for decoding since decodeAudioData detaches the arraybuffer
+            const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+            
+            if (type === 'warning') customWarningChimeBuffer = decoded;
+            else if (type === 'tension') customTensionChimeBuffer = decoded;
+            else if (type === 'urgent') customUrgentChimeBuffer = decoded;
+            
+            // 2. Convert arrayBuffer to base64
+            const base64Str = arrayBufferToBase64(arrayBuffer);
+            
+            // 3. Save to IndexedDB
+            await saveCustomAudio(`${type}_chime`, base64Str, file.name);
+            console.log(`Saved custom ${type} chime to IndexedDB: ${file.name}`);
+            
+            // 4. Update state and label UI
+            state.preferences.chime[`${type}Filename`] = file.name;
+            const lbl = document.getElementById(`lbl-chime-${type}-file`);
+            if (lbl) lbl.textContent = file.name;
+            
+            // 5. Play preview immediately for premium UX feedback!
+            playSynthChime(type);
+            
+            // 6. Save preferences
+            packAndSavePreferences(true);
+            
+          } catch (err) {
+            console.error(`Failed to load/decode uploaded custom ${type} chime:`, err);
+            alert(`벨소리 파일을 로딩 및 변환하는 데 실패했습니다. 지원되는 오디오 포맷(WAV, MP3 등)인지 확인해 주세요.`);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      });
+    }
+  });
 }
 

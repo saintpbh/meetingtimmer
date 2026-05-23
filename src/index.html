@@ -527,9 +527,18 @@
                 <label for="select-chime-warning-sound" class="detail-label">🎵 Chime Sound</label>
                 <select id="select-chime-warning-sound">
                   <option value="synth">Synthetic Harmony</option>
-                  <option value="wav">Zero-Latency WAV</option>
+                  <option value="wav">Zero-Latency WAV (Default)</option>
+                  <option value="custom">Custom Audio File</option>
                   <option value="muted">Muted (Silent)</option>
                 </select>
+              </div>
+              <div class="detail-control" id="chime-warning-file-control" style="display: none; min-width: 140px;">
+                <label class="detail-label">📂 Upload Custom WAV</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <button type="button" class="btn-action-small" onclick="document.getElementById('input-chime-warning-file').click()" style="padding: 4px 8px; font-size: 0.75rem; margin-top: 0; min-height: auto;">Upload...</button>
+                  <span id="lbl-chime-warning-file" style="font-size: 0.72rem; color: var(--text-muted); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">None</span>
+                </div>
+                <input type="file" id="input-chime-warning-file" accept="audio/*" style="display: none;" />
               </div>
               <div class="detail-control">
                 <label for="color-chime-warning-color" class="detail-label">🎨 Alert Color</label>
@@ -562,9 +571,18 @@
                 <label for="select-chime-tension-sound" class="detail-label">🎵 Chime Sound</label>
                 <select id="select-chime-tension-sound">
                   <option value="synth">Synthetic Harmony</option>
-                  <option value="wav">Zero-Latency WAV</option>
+                  <option value="wav">Zero-Latency WAV (30초.wav)</option>
+                  <option value="custom">Custom Audio File</option>
                   <option value="muted">Muted (Silent)</option>
                 </select>
+              </div>
+              <div class="detail-control" id="chime-tension-file-control" style="display: none; min-width: 140px;">
+                <label class="detail-label">📂 Upload Custom WAV</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <button type="button" class="btn-action-small" onclick="document.getElementById('input-chime-tension-file').click()" style="padding: 4px 8px; font-size: 0.75rem; margin-top: 0; min-height: auto;">Upload...</button>
+                  <span id="lbl-chime-tension-file" style="font-size: 0.72rem; color: var(--text-muted); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">None</span>
+                </div>
+                <input type="file" id="input-chime-tension-file" accept="audio/*" style="display: none;" />
               </div>
               <div class="detail-control">
                 <label for="color-chime-tension-color" class="detail-label">🎨 Alert Color</label>
@@ -597,9 +615,18 @@
                 <label for="select-chime-urgent-sound" class="detail-label">🎵 Chime Sound</label>
                 <select id="select-chime-urgent-sound">
                   <option value="synth">Synthetic Harmony</option>
-                  <option value="wav">Zero-Latency WAV</option>
+                  <option value="wav">Zero-Latency WAV (Default)</option>
+                  <option value="custom">Custom Audio File</option>
                   <option value="muted">Muted (Silent)</option>
                 </select>
+              </div>
+              <div class="detail-control" id="chime-urgent-file-control" style="display: none; min-width: 140px;">
+                <label class="detail-label">📂 Upload Custom WAV</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <button type="button" class="btn-action-small" onclick="document.getElementById('input-chime-urgent-file').click()" style="padding: 4px 8px; font-size: 0.75rem; margin-top: 0; min-height: auto;">Upload...</button>
+                  <span id="lbl-chime-urgent-file" style="font-size: 0.72rem; color: var(--text-muted); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">None</span>
+                </div>
+                <input type="file" id="input-chime-urgent-file" accept="audio/*" style="display: none;" />
               </div>
               <div class="detail-control">
                 <label for="color-chime-urgent-color" class="detail-label">🎨 Alert Color</label>
