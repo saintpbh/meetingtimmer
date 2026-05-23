@@ -1,4 +1,4 @@
-// Force asset rebuild trigger: 2026-05-23-v2
+// Force asset rebuild trigger: 2026-05-23-v3
 use tauri::{AppHandle, Manager, Emitter};
 use std::sync::OnceLock;
 use std::sync::mpsc::Sender;

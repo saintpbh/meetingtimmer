@@ -22,7 +22,7 @@
       --accent-success: #22c55e;
       
       /* Active Theme Fallbacks */
-      --theme-bg: radial-gradient(circle at center, #0a0f24 0%, #030611 100%);
+      --theme-bg: #000000;
       --theme-accent: #3b82f6;
       --theme-accent-glow: 0 0 25px rgba(59, 130, 246, 0.6), 0 0 50px rgba(59, 130, 246, 0.3);
       --theme-text: #ffffff;
@@ -151,7 +151,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: transparent;
+      background: var(--theme-bg);
       font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--theme-text);
       transition: background 0.4s ease, color 0.4s ease;
@@ -166,8 +166,7 @@
       align-items: center;
       padding: 4vw;
       text-align: center;
-      background: var(--theme-bg);
-      transition: background 0.4s ease;
+      background: transparent;
       position: relative;
     }
 
@@ -181,7 +180,7 @@
       align-items: center;
       width: calc(var(--viewer-font-size) * 4.6);
       height: calc(var(--viewer-font-size) * 4.6);
-      transition: width 0.2s ease, height 0.2s ease;
+      transition: width 0.2s ease, height 0.2s ease, opacity 0.4s ease;
     }
 
     .progress-ring {
@@ -569,7 +568,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: radial-gradient(circle at center, rgba(10, 15, 36, 0.95) 0%, rgba(3, 6, 17, 0.98) 100%);
+      background: #000000;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       display: flex;
@@ -858,7 +857,8 @@
       announcement: '',
       lastUpdated: 0,
       chimeSettings: {},
-      webPreferences: {} // 메인 창에서 보낸 실시간 웹 커스텀 preferences
+      webPreferences: {}, // 메인 창에서 보낸 실시간 웹 커스텀 preferences
+      visible: true
     };
 
     const timerTextEl = document.getElementById('timer-text');
@@ -1033,6 +1033,49 @@
         progressBarEl.style.strokeDashoffset = offset;
       }
 
+      // ==========================================
+      // 💡 지능형 대기/초기화 암전 & 일시정지 반투명 가드 (Obsidian Standby Guard)
+      // ==========================================
+      const wrapperEl = document.getElementById('timer-display-wrapper');
+      if (wrapperEl) {
+        const isInitialStandby = !timerState.isRunning && (Math.abs(currentVal - timerState.duration) < 0.5 || currentVal >= timerState.duration);
+        
+        if (timerState.visible === false) {
+          // ESC 혹은 메인 오버레이 설정으로 레이어가 완전히 꺼졌을 때 -> 암전
+          wrapperEl.style.opacity = '0';
+          wrapperEl.style.pointerEvents = 'none';
+        } else {
+          if (!timerState.isRunning) {
+            if (isInitialStandby) {
+              // 초기화 대기 상태 -> 글자/링 완전 가림 (검은색 대기화면 구현)
+              wrapperEl.style.opacity = '0';
+              wrapperEl.style.pointerEvents = 'none';
+            } else {
+              // 발표 중간에 일시정지(Pause)된 상태 -> 아주 어둡게 20% 투명도로 흐려짐
+              wrapperEl.style.opacity = '0.2';
+              wrapperEl.style.pointerEvents = 'auto';
+            }
+          } else {
+            // 타이머 정상 실행 중 -> 100% 쨍하게 활성화
+            wrapperEl.style.opacity = '1';
+            wrapperEl.style.pointerEvents = 'auto';
+          }
+        }
+        
+        // 💡 공지사항 배너도 초기화 대기 상태(암전)일 때는 완전히 가려 완벽한 해당 테마 배경만 보이도록 구현
+        const noticeBannerEl = document.getElementById('notice-banner');
+        if (noticeBannerEl) {
+          if (timerState.visible === false || isInitialStandby) {
+            noticeBannerEl.style.opacity = '0';
+            noticeBannerEl.style.pointerEvents = 'none';
+          } else {
+            // CSS 클래스의 기본 opacity 전이로 복구
+            noticeBannerEl.style.opacity = '';
+            noticeBannerEl.style.pointerEvents = '';
+          }
+        }
+      }
+
       // 💡 남은 시간별 지능형 3단계 컬러 및 점멸(Blink) 핫스왑
       let activeColor = '';
       let activeBlink = false;
@@ -1193,10 +1236,14 @@
           timerState.isRunning = !!rawData.isRunning;
           timerState.announcement = rawData.announcement || '';
           timerState.lastUpdated = Date.now();
-          timerState.chimeSettings = rawData.preferences?.chime || {};
+          // 💡 State Preservation Shield: Only update configurations if payload contains preferences
+          if (rawData.preferences) {
+            timerState.chimeSettings = rawData.preferences.chime || {};
+            timerState.webPreferences = rawData.preferences.web || {};
+            timerState.visible = rawData.preferences.timer?.visible !== false;
+          }
           
-          const webPrefs = rawData.preferences?.web || {};
-          timerState.webPreferences = webPrefs;
+          const webPrefs = timerState.webPreferences || {};
 
           // 💡 메인 PC 웹출력 설정 연동
           if (webPrefs.enabled === false) {
