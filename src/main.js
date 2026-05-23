@@ -2108,7 +2108,7 @@ window.addEventListener('DOMContentLoaded', () => {
   bindSliderLabel('timer-bg-opacity', 'lbl-timer-bg-opacity');
   bindSliderLabel('clock-font-size', 'lbl-clock-font-size');
   bindSliderLabel('clock-bg-opacity', 'lbl-clock-bg-opacity');
-  bindSliderLabel('notify-scale', 'lbl-notify-scale');
+  bindSliderAndNumInputFloat('notify-scale', 'input-notify-scale-num', 'lbl-notify-scale');
   bindSliderLabel('notify-bg-opacity', 'lbl-notify-bg-opacity');
   bindSliderLabel('chime-volume', 'lbl-chime-volume');
   
@@ -2196,7 +2196,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const liveInputs = [
     'timer-font-size', 'timer-bg-opacity', 'timer-offset-x', 'timer-offset-y', 'timer-bg-color',
     'clock-font-size', 'clock-bg-opacity', 'chk-clock-24h', 'chk-clock-seconds', 'clock-offset-x', 'clock-offset-y', 'clock-bg-color',
-    'notify-scale', 'chk-notify-blur', 'notify-bg-opacity', 'notify-offset-x', 'notify-offset-y', 'notify-bg-color',
+    'notify-scale', 'input-notify-scale-num', 'chk-notify-blur', 'notify-bg-opacity', 'notify-offset-x', 'notify-offset-y', 'notify-bg-color',
     'chk-chime-warning', 'input-chime-warning-time', 'chk-chime-tension', 'input-chime-tension-time', 'chk-chime-urgent', 'input-chime-urgent-time', 'chime-volume',
     'select-chime-warning-sound', 'color-chime-warning-color', 'chk-chime-warning-blink',
     'select-chime-tension-sound', 'color-chime-tension-color', 'chk-chime-tension-blink',
@@ -2445,7 +2445,7 @@ function syncPrefUIState() {
 
   setSliderVal('timer-bg-opacity', 'lbl-timer-bg-opacity', state.preferences.timer.bgOpacity !== undefined ? state.preferences.timer.bgOpacity : 68);
   setSliderVal('clock-bg-opacity', 'lbl-clock-bg-opacity', state.preferences.clock.bgOpacity !== undefined ? state.preferences.clock.bgOpacity : 68);
-  setSliderVal('notify-scale', 'lbl-notify-scale', state.preferences.notify.scale);
+  setSliderAndNumValFloat('notify-scale', 'input-notify-scale-num', 'lbl-notify-scale', state.preferences.notify.scale);
   setSliderVal('notify-bg-opacity', 'lbl-notify-bg-opacity', state.preferences.notify.bgOpacity);
   setSliderVal('chime-volume', 'lbl-chime-volume', state.preferences.chime.volume);
   
@@ -2649,6 +2649,54 @@ function setSliderAndNumVal(sliderId, numInputId, val) {
   const numInput = document.getElementById(numInputId);
   if (slider) slider.value = val;
   if (numInput) numInput.value = val;
+}
+
+function bindSliderAndNumInputFloat(sliderId, numInputId, labelId) {
+  const slider = document.getElementById(sliderId);
+  const numInput = document.getElementById(numInputId);
+  const label = document.getElementById(labelId);
+  if (!slider || !numInput) return;
+  
+  slider.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value).toFixed(1);
+    numInput.value = val;
+    if (label) label.textContent = val;
+  });
+  
+  numInput.addEventListener('input', (e) => {
+    let val = parseFloat(e.target.value);
+    if (isNaN(val)) return;
+    const min = parseFloat(numInput.min) || 0.5;
+    const max = parseFloat(numInput.max) || 10.0;
+    val = Math.max(min, Math.min(max, val));
+    slider.value = val.toFixed(1);
+    if (label) label.textContent = val.toFixed(1);
+  });
+
+  numInput.addEventListener('blur', (e) => {
+    let val = parseFloat(e.target.value);
+    const min = parseFloat(numInput.min) || 0.5;
+    const max = parseFloat(numInput.max) || 10.0;
+    if (isNaN(val)) {
+      numInput.value = parseFloat(slider.value).toFixed(1);
+      return;
+    }
+    val = Math.max(min, Math.min(max, val));
+    numInput.value = val.toFixed(1);
+    slider.value = val.toFixed(1);
+    if (label) label.textContent = val.toFixed(1);
+    packAndSavePreferences(false);
+  });
+}
+
+function setSliderAndNumValFloat(sliderId, numInputId, labelId, val) {
+  const slider = document.getElementById(sliderId);
+  const numInput = document.getElementById(numInputId);
+  const label = document.getElementById(labelId);
+  const floatVal = parseFloat(val).toFixed(1);
+  if (slider) slider.value = floatVal;
+  if (numInput) numInput.value = floatVal;
+  if (label) label.textContent = floatVal;
 }
 
 // Packs current DOM input values, updates state, saves to storage, and syncs overlays

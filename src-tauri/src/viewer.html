@@ -29,6 +29,15 @@
       --theme-ring-track: rgba(255, 255, 255, 0.04);
       --theme-text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
       --theme-overlay-opacity: 0.72;
+      
+      /* 💡 Font-based dynamic scaling variable */
+      --viewer-font-size: 13.5vw;
+    }
+
+    @media (min-aspect-ratio: 1/1) {
+      :root {
+        --viewer-font-size: 13.5vh;
+      }
     }
 
     /* 1. Cyber Neon (Default Blue) */
@@ -170,10 +179,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 62vw;
-      height: 62vw;
-      max-width: 62vh;
-      max-height: 62vh;
+      width: calc(var(--viewer-font-size) * 4.6);
+      height: calc(var(--viewer-font-size) * 4.6);
+      transition: width 0.2s ease, height 0.2s ease;
     }
 
     .progress-ring {
@@ -197,7 +205,7 @@
     }
 
     #timer-text {
-      font-size: 13.5vw;
+      font-size: var(--viewer-font-size);
       font-weight: 800;
       line-height: 1;
       font-variant-numeric: tabular-nums;
@@ -206,22 +214,16 @@
       transition: color 0.4s ease, font-size 0.2s ease, font-family 0.3s ease;
       z-index: 2;
     }
-    
-    @media (min-aspect-ratio: 1/1) {
-      #timer-text {
-        font-size: 13.5vh;
-      }
-    }
 
     /* Minimal Running Status Light */
     #status-indicator {
       position: absolute;
       top: 10%;
       right: 10%;
-      width: 1.8vw;
-      height: 1.8vw;
-      min-width: 12px;
-      min-height: 12px;
+      width: calc(var(--viewer-font-size) * 0.13);
+      height: calc(var(--viewer-font-size) * 0.13);
+      min-width: 10px;
+      min-height: 10px;
       border-radius: 50%;
       background: #64748b;
       box-shadow: 0 0 15px rgba(100, 116, 139, 0.4);
@@ -458,6 +460,106 @@
       animation: neon-breath 1.2s infinite ease-in-out;
     }
 
+    /* Sliding Size Picker Panel */
+    #size-panel {
+      position: absolute;
+      bottom: 84px;
+      right: 84px;
+      background: rgba(3, 7, 21, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 18px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 999;
+      transform: translateY(15px);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      width: 260px;
+    }
+
+    #size-panel.show {
+      display: flex;
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .size-panel-header {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .size-control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .size-control-row label {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .size-input-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 4px 8px;
+    }
+
+    .size-input-group input {
+      width: 55px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+      text-align: center;
+    }
+
+    .size-input-group span {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    #input-viewer-size-slider {
+      accent-color: var(--theme-accent);
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .size-chip-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 8px;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .size-chip-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
     /* ==========================================
        Frosted Glass PWA Scanner Overlay Styling
        ========================================== */
@@ -682,8 +784,24 @@
   <div id="floating-controls">
     <!-- 🎨 테마 토글 팝업 버튼 -->
     <button id="btn-theme-toggle" class="control-btn" title="테마 변경">🎨</button>
+    <!-- 🔍 크기 토글 팝업 버튼 -->
+    <button id="btn-size-toggle" class="control-btn" title="크기 및 비율 설정">🔍</button>
     <!-- 📺 전체화면 토글 버튼 -->
     <button id="btn-fullscreen" class="control-btn" title="전체화면 모드 토글">📺</button>
+  </div>
+
+  <!-- 글꼴 크기 수동 조절 패널 -->
+  <div id="size-panel">
+    <div class="size-panel-header">Font & Scale Controls</div>
+    <div class="size-control-row">
+      <label for="input-viewer-size-num">Font Size:</label>
+      <div class="size-input-group">
+        <input type="number" id="input-viewer-size-num" min="10" max="1000" value="150" />
+        <span>px</span>
+      </div>
+    </div>
+    <input type="range" id="input-viewer-size-slider" min="10" max="1000" step="5" value="150" style="width: 100%;" />
+    <button id="btn-reset-viewer-size" class="size-chip-btn">Reset to Server Size</button>
   </div>
 
   <!-- 10가지 프리미엄 컨셉 테마 선택기 슬라이드 아웃 패널 -->
@@ -753,6 +871,23 @@
     const themePanel = document.getElementById('theme-panel');
     const floatingControls = document.getElementById('floating-controls');
 
+    // 💡 Font Size controls references
+    const btnSizeToggle = document.getElementById('btn-size-toggle');
+    const sizePanel = document.getElementById('size-panel');
+    const inputViewerSizeNum = document.getElementById('input-viewer-size-num');
+    const inputViewerSizeSlider = document.getElementById('input-viewer-size-slider');
+    const btnResetViewerSize = document.getElementById('btn-reset-viewer-size');
+
+    // Font-based Dynamic Scaling Manager
+    function applyViewerFontSize(fontSizeVal) {
+      if (!fontSizeVal) return;
+      let sizeStr = fontSizeVal;
+      if (typeof fontSizeVal === 'number' || !isNaN(fontSizeVal)) {
+        sizeStr = `${fontSizeVal}px`;
+      }
+      document.documentElement.style.setProperty('--viewer-font-size', sizeStr);
+    }
+
     // 💡 SVG 원형 게이지 둘레 계산
     const ringRadius = 108;
     const ringCircumference = 2 * Math.PI * ringRadius;
@@ -795,13 +930,56 @@
     btnThemeToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       themePanel.classList.toggle('show');
+      sizePanel.classList.remove('show');
       floatingControls.classList.toggle('active', themePanel.classList.contains('show'));
     });
 
-    // 화면 탭 시 테마 패널 닫기
+    // 🔍 글꼴 크기 패널 토글
+    btnSizeToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sizePanel.classList.toggle('show');
+      themePanel.classList.remove('show');
+      floatingControls.classList.toggle('active', sizePanel.classList.contains('show'));
+    });
+
+    // 글꼴 크기 수동 입력 박스 제어
+    inputViewerSizeNum.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      if (isNaN(val) || val < 10) return;
+      inputViewerSizeSlider.value = val;
+      localStorage.setItem('viewer_font_size', val);
+      applyViewerFontSize(val);
+    });
+
+    // 글꼴 크기 슬라이더 제어
+    inputViewerSizeSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      inputViewerSizeNum.value = val;
+      localStorage.setItem('viewer_font_size', val);
+      applyViewerFontSize(val);
+    });
+
+    // 서버 권장 크기로 리셋
+    btnResetViewerSize.addEventListener('click', () => {
+      localStorage.removeItem('viewer_font_size');
+      sizePanel.classList.remove('show');
+      floatingControls.classList.remove('active');
+      
+      const serverSize = (timerState.webPreferences && timerState.webPreferences.fontSize) || 300;
+      applyViewerFontSize(serverSize);
+      inputViewerSizeNum.value = serverSize;
+      inputViewerSizeSlider.value = serverSize;
+    });
+
+    // 화면 탭 시 패널 닫기
     document.addEventListener('click', (e) => {
       if (!themePanel.contains(e.target) && e.target !== btnThemeToggle) {
         themePanel.classList.remove('show');
+      }
+      if (!sizePanel.contains(e.target) && e.target !== btnSizeToggle && e.target !== inputViewerSizeNum && e.target !== inputViewerSizeSlider) {
+        sizePanel.classList.remove('show');
+      }
+      if (!themePanel.classList.contains('show') && !sizePanel.classList.contains('show')) {
         floatingControls.classList.remove('active');
       }
     });
@@ -1032,8 +1210,17 @@
           }
 
           if (webPrefs.fontSize) {
-            const fontVw = (webPrefs.fontSize / 1920) * 100;
-            timerTextEl.style.fontSize = `${fontVw}vw`;
+            // Apply font-based scaling
+            const manualSizeOverride = localStorage.getItem('viewer_font_size');
+            if (manualSizeOverride) {
+              applyViewerFontSize(manualSizeOverride);
+              inputViewerSizeNum.value = manualSizeOverride;
+              inputViewerSizeSlider.value = manualSizeOverride;
+            } else {
+              applyViewerFontSize(webPrefs.fontSize);
+              inputViewerSizeNum.value = webPrefs.fontSize;
+              inputViewerSizeSlider.value = webPrefs.fontSize;
+            }
           }
 
           if (webPrefs.theme === 'transparent') {
@@ -1217,6 +1404,14 @@
 
     // Startup Initializer
     function initViewer() {
+      // Load saved font size override if exists
+      const savedOverride = localStorage.getItem('viewer_font_size');
+      if (savedOverride) {
+        applyViewerFontSize(savedOverride);
+        inputViewerSizeNum.value = savedOverride;
+        inputViewerSizeSlider.value = savedOverride;
+      }
+      
       const currentHost = window.location.host;
       
       disconnectEl.querySelector('span').textContent = "연결을 초기화하는 중...";
