@@ -1083,6 +1083,8 @@ body.overlay-body {
   transform-origin: center center;
   transition: all var(--transition-normal);
   will-change: transform, opacity;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .overlay-timer-digits {
@@ -1144,6 +1146,8 @@ body.overlay-body {
   transform-origin: center center;
   opacity: 0;
   will-change: transform, opacity;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
   
   /* CSS Variables for Dynamic Layout & Offset Tuning */
   --offset-x: 0px;
@@ -1795,6 +1799,8 @@ body.theme-rose .btn-toggle-widget.active {
   transition: all var(--transition-normal);
   pointer-events: auto;
   will-change: transform, opacity;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .overlay-clock-digits {
