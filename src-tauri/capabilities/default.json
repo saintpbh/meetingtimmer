@@ -1,0 +1,26 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main",
+    "overlay"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "core:event:default",
+    "core:window:default",
+    "allow-get-monitors",
+    "allow-move-overlay-to-monitor",
+    "allow-set-overlay-clickthrough",
+    "allow-set-overlay-visible",
+    "allow-share-timer-state",
+    "allow-set-main-content-size",
+    "allow-detect-presentation-app",
+    "allow-control-presentation",
+    "allow-ndi-start-sender",
+    "allow-ndi-stop-sender",
+    "allow-ndi-send-frame"
+  ]
+}

@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP Timer Overlay - Premium Remote Viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400;600;800&family=Bebas+Neue&family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================
+       Premium Theme Variables Definition
+       ========================================== */
+    :root {
+      --accent-color: #3b82f6;
+      --accent-warning: #eab308;
+      --accent-tension: #f97316;
+      --accent-danger: #ef4444;
+      --accent-success: #22c55e;
+      
+      /* Active Theme Fallbacks */
+      --theme-bg: radial-gradient(circle at center, #0a0f24 0%, #030611 100%);
+      --theme-accent: #3b82f6;
+      --theme-accent-glow: 0 0 25px rgba(59, 130, 246, 0.6), 0 0 50px rgba(59, 130, 246, 0.3);
+      --theme-text: #ffffff;
+      --theme-ring-track: rgba(255, 255, 255, 0.04);
+      --theme-text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      --theme-overlay-opacity: 0.72;
+    }
+
+    /* 1. Cyber Neon (Default Blue) */
+    body.theme-cyber-blue {
+      --theme-bg: radial-gradient(circle at center, #060b19 0%, #02040a 100%);
+      --theme-accent: #00f2fe;
+      --theme-accent-glow: 0 0 20px #0056f9, 0 0 40px #00f2fe;
+      --theme-text: #ffffff;
+      --theme-ring-track: rgba(255, 255, 255, 0.04);
+      --theme-text-shadow: 0 0 15px rgba(0, 242, 254, 0.35);
+    }
+
+    /* 2. Crimson Sunset (Sunset Aura) */
+    body.theme-sunset-aura {
+      --theme-bg: radial-gradient(circle at center, #1b0507 0%, #0a0102 100%);
+      --theme-accent: #ff416c;
+      --theme-accent-glow: 0 0 20px #ff4b2b, 0 0 40px #ff416c;
+      --theme-text: #ffffff;
+      --theme-ring-track: rgba(255, 255, 255, 0.04);
+      --theme-text-shadow: 0 0 15px rgba(255, 65, 108, 0.35);
+    }
+
+    /* 3. Emerald Zen */
+    body.theme-emerald-zen {
+      --theme-bg: radial-gradient(circle at center, #031c0e 0%, #010a05 100%);
+      --theme-accent: #00ff87;
+      --theme-accent-glow: 0 0 20px #00ff87, 0 0 40px rgba(0, 255, 135, 0.3);
+      --theme-text: #ffffff;
+      --theme-ring-track: rgba(255, 255, 255, 0.04);
+      --theme-text-shadow: 0 0 15px rgba(0, 255, 135, 0.3);
+    }
+
+    /* 4. Royal Champagne */
+    body.theme-royal-gold {
+      --theme-bg: radial-gradient(circle at center, #110d05 0%, #060401 100%);
+      --theme-accent: #d4af37;
+      --theme-accent-glow: 0 0 20px #855f19, 0 0 40px #d4af37;
+      --theme-text: #fdf6e2;
+      --theme-ring-track: rgba(212, 175, 55, 0.06);
+      --theme-text-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+    }
+
+    /* 5. Vaporwave Dream */
+    body.theme-vaporwave {
+      --theme-bg: radial-gradient(circle at center, #1f0224 0%, #0a000c 100%);
+      --theme-accent: #ff007f;
+      --theme-accent-glow: 0 0 20px #7f00ff, 0 0 40px #ff007f;
+      --theme-text: #ffffff;
+      --theme-ring-track: rgba(255, 255, 255, 0.04);
+      --theme-text-shadow: 0 0 15px rgba(255, 0, 127, 0.35);
+    }
+
+    /* 6. Carbon Stealth */
+    body.theme-carbon-minimal {
+      --theme-bg: radial-gradient(circle at center, #17181c 0%, #0b0c0e 100%);
+      --theme-accent: #ffffff;
+      --theme-accent-glow: 0 0 10px rgba(255, 255, 255, 0.4);
+      --theme-text: #e3e4e8;
+      --theme-ring-track: rgba(255, 255, 255, 0.06);
+      --theme-text-shadow: none;
+    }
+
+    /* 7. Frosted Glacier (Light Theme) */
+    body.theme-mono-frost {
+      --theme-bg: linear-gradient(135deg, #e0e5ec 0%, #b8c6db 100%);
+      --theme-accent: #3b82f6;
+      --theme-accent-glow: 0 0 15px rgba(59, 130, 246, 0.4);
+      --theme-text: #1f1f1f;
+      --theme-ring-track: rgba(0, 0, 0, 0.06);
+      --theme-text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      --theme-overlay-opacity: 0.15;
+    }
+
+    /* 8. Cosmic Aurora */
+    body.theme-cosmic-aurora {
+      --theme-bg: radial-gradient(circle at center, #05161a 0%, #00070a 100%);
+      --theme-accent: #02e3b6;
+      --theme-accent-glow: 0 0 20px #7f00ff, 0 0 40px #02e3b6;
+      --theme-text: #ffffff;
+      --theme-ring-track: rgba(255, 255, 255, 0.04);
+      --theme-text-shadow: 0 0 15px rgba(2, 227, 182, 0.35);
+    }
+
+    /* 9. Midnight Inferno */
+    body.theme-midnight-inferno {
+      --theme-bg: radial-gradient(circle at center, #1b0000 0%, #050000 100%);
+      --theme-accent: #ff003c;
+      --theme-accent-glow: 0 0 20px #ff0000, 0 0 45px #ff003c;
+      --theme-text: #ffffff;
+      --theme-ring-track: rgba(255, 255, 255, 0.04);
+      --theme-text-shadow: 0 0 15px rgba(255, 0, 60, 0.35);
+    }
+
+    /* 10. OBS Overlay (Green Screen / Transparent optimization) */
+    body.theme-transparent-overlay {
+      --theme-bg: transparent;
+      --theme-accent: #00ff00;
+      --theme-accent-glow: none;
+      --theme-text: #00ff00;
+      --theme-ring-track: rgba(0, 255, 0, 0.15);
+      --theme-text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 0 15px rgba(0,0,0,0.9);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--theme-text);
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    #viewer-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 4vw;
+      text-align: center;
+      background: var(--theme-bg);
+      transition: background 0.4s ease;
+      position: relative;
+    }
+
+    /* ==========================================
+       Circular Progress Ring Styling
+       ========================================== */
+    #timer-display-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 62vw;
+      height: 62vw;
+      max-width: 62vh;
+      max-height: 62vh;
+    }
+
+    .progress-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .progress-ring-track {
+      stroke: var(--theme-ring-track);
+      transition: stroke 0.4s ease;
+    }
+
+    .progress-ring-bar {
+      stroke: var(--theme-accent);
+      filter: drop-shadow(var(--theme-accent-glow));
+      transition: stroke-dashoffset 0.1s linear, stroke 0.4s ease, filter 0.4s ease;
+    }
+
+    #timer-text {
+      font-size: 13.5vw;
+      font-weight: 800;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      text-shadow: var(--theme-text-shadow);
+      letter-spacing: -0.03em;
+      transition: color 0.4s ease, font-size 0.2s ease, font-family 0.3s ease;
+      z-index: 2;
+    }
+    
+    @media (min-aspect-ratio: 1/1) {
+      #timer-text {
+        font-size: 13.5vh;
+      }
+    }
+
+    /* Minimal Running Status Light */
+    #status-indicator {
+      position: absolute;
+      top: 10%;
+      right: 10%;
+      width: 1.8vw;
+      height: 1.8vw;
+      min-width: 12px;
+      min-height: 12px;
+      border-radius: 50%;
+      background: #64748b;
+      box-shadow: 0 0 15px rgba(100, 116, 139, 0.4);
+      transition: all 0.3s ease;
+      z-index: 3;
+    }
+
+    #status-indicator.running {
+      background: var(--accent-success);
+      box-shadow: 0 0 20px var(--accent-success);
+    }
+
+    #status-indicator.paused {
+      background: var(--accent-warning);
+      box-shadow: 0 0 20px var(--accent-warning);
+    }
+
+    #status-indicator.overtime {
+      background: var(--accent-danger);
+      box-shadow: 0 0 20px var(--accent-danger);
+      animation: status-pulse 1s infinite alternate;
+    }
+
+    /* Live Notice Broadcaster */
+    #notice-banner {
+      margin-top: 3vh;
+      font-size: 2.2vw;
+      font-weight: 600;
+      background: rgba(3, 7, 21, var(--theme-overlay-opacity));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1.5vh 3.5vw;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+      max-width: 80%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      z-index: 5;
+    }
+
+    #notice-banner.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Disconnection Capsule */
+    #disconnect-overlay {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(239, 68, 68, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 9999;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #disconnect-overlay.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #disconnect-overlay .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* ==========================================
+       Premium Floating Controls (Auto-hide Toolbar)
+       ========================================== */
+    #floating-controls {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0.15;
+      transform: scale(0.95);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    #floating-controls:hover,
+    #floating-controls.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .control-btn {
+      background: rgba(3, 7, 21, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      color: #ffffff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .control-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Sliding Theme Picker Panel */
+    #theme-panel {
+      position: absolute;
+      bottom: 84px;
+      right: 24px;
+      background: rgba(3, 7, 21, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 999;
+      transform: translateY(15px);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      width: 250px;
+    }
+
+    #theme-panel.show {
+      display: flex;
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .theme-panel-header {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .theme-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 8px 10px;
+      color: #ffffff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .theme-chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-chip.active {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--theme-accent);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
+    }
+
+    .theme-color-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes status-pulse {
+      0% { opacity: 0.5; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* 프리미엄 숨쉬는 네온 점멸 애니메이션 */
+    @keyframes neon-breath {
+      0% { opacity: 0.25; filter: drop-shadow(0 0 4px var(--theme-accent)); }
+      50% { opacity: 1; filter: drop-shadow(0 0 24px var(--theme-accent)); }
+      100% { opacity: 0.25; filter: drop-shadow(0 0 4px var(--theme-accent)); }
+    }
+
+    .blink-active {
+      animation: neon-breath 1.2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="theme-cyber-blue">
+  <!-- 연결 대기 상태 캡슐 -->
+  <div id="disconnect-overlay">
+    <div class="spinner"></div>
+    <span>연결 대기 중...</span>
+  </div>
+
+  <div id="viewer-container">
+    <!-- 초정밀 원형 링 게이지를 탑재한 시간 영역 -->
+    <div id="timer-display-wrapper">
+      <svg class="progress-ring" viewBox="0 0 240 240">
+        <!-- 배경 정적 트랙 -->
+        <circle class="progress-ring-track" stroke-width="6" fill="transparent" r="108" cx="120" cy="120" />
+        <!-- 실시간 동적 차감 게이지 -->
+        <circle id="timer-progress-bar" class="progress-ring-bar" stroke-width="8" stroke-linecap="round" fill="transparent" r="108" cx="120" cy="120" />
+      </svg>
+      <div id="status-indicator"></div>
+      <span id="timer-text">00:00</span>
+    </div>
+    <!-- 공지사항 및 메인 메시지 안내판 -->
+    <div id="notice-banner">💬 공지사항</div>
+  </div>
+
+  <!-- 플로팅 컨트롤 (마우스 오버 시 미려하게 팝업) -->
+  <div id="floating-controls">
+    <!-- 🎨 테마 토글 팝업 버튼 -->
+    <button id="btn-theme-toggle" class="control-btn" title="테마 변경">🎨</button>
+    <!-- 📺 전체화면 토글 버튼 -->
+    <button id="btn-fullscreen" class="control-btn" title="전체화면 모드 토글">📺</button>
+  </div>
+
+  <!-- 10가지 프리미엄 컨셉 테마 선택기 슬라이드 아웃 패널 -->
+  <div id="theme-panel">
+    <div class="theme-panel-header">Premium Themes</div>
+    <div class="theme-grid">
+      <button class="theme-chip active" data-theme="cyber-blue">
+        <span class="theme-color-dot" style="background: #00f2fe;"></span>Cyber Blue
+      </button>
+      <button class="theme-chip" data-theme="sunset-aura">
+        <span class="theme-color-dot" style="background: #ff416c;"></span>Sunset Aura
+      </button>
+      <button class="theme-chip" data-theme="emerald-zen">
+        <span class="theme-color-dot" style="background: #00ff87;"></span>Emerald Zen
+      </button>
+      <button class="theme-chip" data-theme="royal-gold">
+        <span class="theme-color-dot" style="background: #d4af37;"></span>Royal Gold
+      </button>
+      <button class="theme-chip" data-theme="vaporwave">
+        <span class="theme-color-dot" style="background: #ff007f;"></span>Vaporwave
+      </button>
+      <button class="theme-chip" data-theme="carbon-minimal">
+        <span class="theme-color-dot" style="background: #ffffff;"></span>Carbon Dark
+      </button>
+      <button class="theme-chip" data-theme="mono-frost">
+        <span class="theme-color-dot" style="background: #313131;"></span>Mono Frost
+      </button>
+      <button class="theme-chip" data-theme="cosmic-aurora">
+        <span class="theme-color-dot" style="background: #02e3b6;"></span>Aurora Zen
+      </button>
+      <button class="theme-chip" data-theme="midnight-inferno">
+        <span class="theme-color-dot" style="background: #ff003c;"></span>Inferno Red
+      </button>
+      <button class="theme-chip" data-theme="transparent-overlay">
+        <span class="theme-color-dot" style="background: linear-gradient(to right, #00ff00, transparent);"></span>OBS Trans
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 💡 URL 파라미터 파싱 (?bg=transparent 형태로 투명 배경 OBS 강제 분기 지원)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bgMode = urlParams.get('bg') || '';
+    if (bgMode === 'transparent') {
+      document.body.className = '';
+      document.body.classList.add('theme-transparent-overlay');
+    }
+
+    // 전역 상태 동기화 캐시
+    const timerState = {
+      remaining: 60,
+      duration: 60,
+      isRunning: false,
+      announcement: '',
+      lastUpdated: 0,
+      chimeSettings: {},
+      webPreferences: {} // 메인 창에서 보낸 실시간 웹 커스텀 preferences
+    };
+
+    const timerTextEl = document.getElementById('timer-text');
+    const indicatorEl = document.getElementById('status-indicator');
+    const noticeEl = document.getElementById('notice-banner');
+    const disconnectEl = document.getElementById('disconnect-overlay');
+    const progressBarEl = document.getElementById('timer-progress-bar');
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    const btnThemeToggle = document.getElementById('btn-theme-toggle');
+    const themePanel = document.getElementById('theme-panel');
+    const floatingControls = document.getElementById('floating-controls');
+
+    // 💡 SVG 원형 게이지 둘레 계산
+    const ringRadius = 108;
+    const ringCircumference = 2 * Math.PI * ringRadius;
+    progressBarEl.style.strokeDasharray = ringCircumference;
+    progressBarEl.style.strokeDashoffset = ringCircumference;
+
+    // 💡 테마 매니저 초기화 (로컬 저장소 적용)
+    let selectedTheme = localStorage.getItem('viewer_theme') || 'cyber-blue';
+    if (bgMode !== 'transparent') {
+      applyThemeClass(selectedTheme);
+    }
+
+    function applyThemeClass(themeName) {
+      document.body.className = '';
+      document.body.classList.add(`theme-${themeName}`);
+      
+      // 칩 액티브 클래스 동기화
+      document.querySelectorAll('.theme-chip').forEach(chip => {
+        if (chip.getAttribute('data-theme') === themeName) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+    }
+
+    // 테마 변경 리스너
+    document.querySelectorAll('.theme-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const theme = chip.getAttribute('data-theme');
+        selectedTheme = theme;
+        localStorage.setItem('viewer_theme', theme);
+        applyThemeClass(theme);
+        themePanel.classList.remove('show');
+        floatingControls.classList.remove('active');
+      });
+    });
+
+    // 🎨 테마 패널 토글
+    btnThemeToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      themePanel.classList.toggle('show');
+      floatingControls.classList.toggle('active', themePanel.classList.contains('show'));
+    });
+
+    // 화면 탭 시 테마 패널 닫기
+    document.addEventListener('click', (e) => {
+      if (!themePanel.contains(e.target) && e.target !== btnThemeToggle) {
+        themePanel.classList.remove('show');
+        floatingControls.classList.remove('active');
+      }
+    });
+
+    // 📺 전체화면 모드 제어
+    btnFullscreen.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`전체화면 가동 오류: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // 전체화면 상태 감지 아이콘 스왑
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        btnFullscreen.textContent = '❌';
+        btnFullscreen.title = '전체화면 종료';
+      } else {
+        btnFullscreen.textContent = '📺';
+        btnFullscreen.title = '전체화면 모드';
+      }
+    });
+
+    // 💡 클라이언트 사이드 보간 카운트다운 (Client-side 60fps Interpolation)
+    function tick() {
+      requestAnimationFrame(tick);
+
+      let currentVal = timerState.remaining;
+      
+      if (timerState.isRunning && timerState.remaining > -9999) {
+        const elapsed = (Date.now() - timerState.lastUpdated) / 1000;
+        currentVal = timerState.remaining - elapsed;
+      }
+
+      const isOvertime = currentVal < 0;
+      const absVal = Math.abs(currentVal);
+      const m = String(Math.floor(absVal / 60)).padStart(2, '0');
+      const s = String(Math.floor(absVal % 60)).padStart(2, '0');
+
+      timerTextEl.textContent = `${isOvertime ? '-' : ''}${m}:${s}`;
+
+      // ==========================================
+      // 멋진 원형 프로그레스 바 대시 오프셋 동적 차감
+      // ==========================================
+      if (timerState.duration > 0) {
+        const ratio = isOvertime ? 1.0 : Math.max(0, Math.min(1, (timerState.duration - currentVal) / timerState.duration));
+        const offset = ringCircumference - (ratio * ringCircumference);
+        progressBarEl.style.strokeDashoffset = offset;
+      }
+
+      // 💡 남은 시간별 지능형 3단계 컬러 및 점멸(Blink) 핫스왑
+      let activeColor = '';
+      let activeBlink = false;
+      const chime = timerState.chimeSettings || {};
+      
+      if (isOvertime) {
+        activeColor = chime.urgentColor || 'var(--accent-danger)';
+        activeBlink = chime.enableUrgent ? !!chime.urgentBlink : true;
+      } else {
+        const warningTime = parseInt(chime.warningTime) || 60;
+        const tensionTime = parseInt(chime.tensionTime) || 30;
+        const urgentTime = parseInt(chime.urgentTime) || 10;
+
+        if (chime.enableUrgent && currentVal <= urgentTime) {
+          activeColor = chime.urgentColor || 'var(--accent-danger)';
+          activeBlink = !!chime.urgentBlink;
+        } else if (chime.enableTension && currentVal <= tensionTime) {
+          activeColor = chime.tensionColor || 'var(--accent-tension)';
+          activeBlink = !!chime.tensionBlink;
+        } else if (chime.enableWarning && currentVal <= warningTime) {
+          activeColor = chime.warningColor || 'var(--accent-warning)';
+          activeBlink = !!chime.warningBlink;
+        }
+      }
+
+      // 테마별 기본 프리미엄 색상이거나 강제 할당된 경고 색상으로 덮어쓰기
+      if (activeColor) {
+        timerTextEl.style.color = activeColor;
+        progressBarEl.style.stroke = activeColor;
+        progressBarEl.style.filter = `drop-shadow(0 0 16px ${activeColor})`;
+      } else {
+        // 커스텀 지정된 색상 또는 테마 Accent
+        const customColor = timerState.webPreferences.textColor;
+        timerTextEl.style.color = customColor || 'var(--theme-accent)';
+        progressBarEl.style.stroke = customColor || 'var(--theme-accent)';
+        progressBarEl.style.filter = customColor ? `drop-shadow(0 0 16px ${customColor})` : 'drop-shadow(var(--theme-accent-glow))';
+      }
+
+      // 💡 숨쉬는 네온 점멸 애니메이션 클래스 스왑
+      if (activeBlink && timerState.isRunning) {
+        timerTextEl.classList.add('blink-active');
+        progressBarEl.classList.add('blink-active');
+      } else {
+        timerTextEl.classList.remove('blink-active');
+        progressBarEl.classList.remove('blink-active');
+      }
+
+      // 도트 램프 상태 핫스왑
+      indicatorEl.className = '';
+      if (isOvertime) {
+        indicatorEl.classList.add('overtime');
+      } else if (timerState.isRunning) {
+        indicatorEl.classList.add('running');
+      } else {
+        indicatorEl.classList.add('paused');
+      }
+    }
+
+    // 💡 연결 끊김 자동 복구 웹소켓 클라이언트 엔진
+    let ws = null;
+    let reconnectTimeout = null;
+
+    function connect() {
+      if (ws) {
+        ws.close();
+      }
+
+      disconnectEl.querySelector('span').textContent = "서버 연결 시도 중...";
+      disconnectEl.classList.add('show');
+
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
+      
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log('[WebViewer] Connected to WebSocket channel.');
+        disconnectEl.classList.remove('show');
+        if (reconnectTimeout) {
+          clearTimeout(reconnectTimeout);
+          reconnectTimeout = null;
+        }
+      };
+
+      ws.onmessage = (e) => {
+        try {
+          const rawData = JSON.parse(e.data);
+          
+          timerState.remaining = parseFloat(rawData.remaining) || 0;
+          timerState.duration = parseFloat(rawData.duration) || 60;
+          timerState.isRunning = !!rawData.isRunning;
+          timerState.announcement = rawData.announcement || '';
+          timerState.lastUpdated = Date.now();
+          timerState.chimeSettings = rawData.preferences?.chime || {};
+          
+          const webPrefs = rawData.preferences?.web || {};
+          timerState.webPreferences = webPrefs;
+
+          // 💡 메인 PC 웹출력 설정 연동
+          
+          // 1. 활성화 여부
+          if (webPrefs.enabled === false) {
+            document.getElementById('viewer-container').style.display = 'none';
+          } else {
+            document.getElementById('viewer-container').style.display = 'flex';
+          }
+
+          // 2. 메인 창 강제 지시 폰트 패밀리
+          if (webPrefs.fontFamily) {
+            timerTextEl.style.fontFamily = `'${webPrefs.fontFamily}', sans-serif`;
+          }
+
+          // 3. 메인 창 지시 폰트 사이즈 (1920px 해상도 기준 vw 변환)
+          if (webPrefs.fontSize) {
+            const fontVw = (webPrefs.fontSize / 1920) * 100;
+            timerTextEl.style.fontSize = `${fontVw}vw`;
+          }
+
+          // 4. 메인 창이 지시한 배경 모드가 'transparent' 일 때만 OBS 투명 배경 강제 설정
+          if (webPrefs.theme === 'transparent') {
+            document.body.className = '';
+            document.body.classList.add('theme-transparent-overlay');
+          } else if (bgMode !== 'transparent') {
+            // 그 외 일반 모드 시 유저가 웹뷰어에서 직접 선택한 프리미엄 테마 적용 유지
+            applyThemeClass(selectedTheme);
+          }
+
+          // 공지사항 바인딩
+          if (timerState.announcement.trim()) {
+            noticeEl.textContent = `💬 ${timerState.announcement}`;
+            noticeEl.classList.add('active');
+          } else {
+            noticeEl.classList.remove('active');
+          }
+        } catch (err) {
+          console.error('[WebViewer] Message parse error:', err);
+        }
+      };
+
+      ws.onclose = () => {
+        console.warn('[WebViewer] WebSocket Connection closed. Retrying...');
+        disconnectEl.querySelector('span').textContent = "연결이 끊어졌습니다. 재연결 시도 중...";
+        disconnectEl.classList.add('show');
+        
+        if (!reconnectTimeout) {
+          reconnectTimeout = setTimeout(connect, 1500);
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.error('[WebViewer] WebSocket Error:', err);
+        ws.close();
+      };
+    }
+
+    // 기동
+    connect();
+    tick();
+  </script>
+</body>
+</html>

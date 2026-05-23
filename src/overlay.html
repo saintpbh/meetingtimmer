@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Presentation Timer Overlay</title>
+    <!-- Use Google Fonts Outfit, Inter, Bebas Neue, Share Tech Mono, Orbitron, Chakra Petch, Roboto Mono, Space Mono, JetBrains Mono, Source Code Pro for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Source+Code+Pro:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="overlay.js" defer></script>
+  </head>
+
+  <body class="overlay-body">
+    <!-- Edit Mode Floating Guide Bar -->
+    <div id="overlay-edit-guide" class="overlay-edit-guide">
+      <span class="guide-icon">🎯</span>
+      <span class="guide-text">드래그하여 시계와 알림판의 위치를 조정하세요. 완료 후 메인 창에서 '마우스 클릭스루'를 켜시면 배치 모드가 완료됩니다.</span>
+    </div>
+
+    <!-- 3x3 Absolute Positioning Grid Matrix -->
+    <div class="overlay-grid">
+      <div id="zone-top-left" class="overlay-zone zone-top-left"></div>
+      <div id="zone-top-center" class="overlay-zone zone-top-center"></div>
+      <div id="zone-top-right" class="overlay-zone zone-top-right"></div>
+      
+      <div id="zone-center-left" class="overlay-zone zone-center-left"></div>
+      <div id="zone-center-center" class="overlay-zone zone-center-center"></div>
+      <div id="zone-center-right" class="overlay-zone zone-center-right"></div>
+      
+      <div id="zone-bottom-left" class="overlay-zone zone-bottom-left"></div>
+      <div id="zone-bottom-center" class="overlay-zone zone-bottom-center"></div>
+      <div id="zone-bottom-right" class="overlay-zone zone-bottom-right"></div>
+    </div>
+
+    <!-- Template Elements (Detached initially, will be appended to specific zone on load/updates) -->
+    <div id="template-container" style="display: none;">
+      <!-- Overlay Timer Badge -->
+      <div id="overlay-timer" class="overlay-timer">
+        <span class="overlay-timer-dot"></span>
+        <span id="overlay-timer-text" class="overlay-timer-digits">00:00</span>
+      </div>
+
+      <!-- Overlay Notice Board -->
+      <div id="overlay-notice" class="overlay-notice">
+        <span class="overlay-notice-icon">💬</span>
+        <span id="overlay-notice-text" class="overlay-notice-text">Welcome!</span>
+      </div>
+
+      <!-- Overlay Real-Time Clock Badge -->
+      <div id="overlay-clock" class="overlay-clock">
+        <span class="overlay-clock-icon">⏰</span>
+        <span id="overlay-clock-text" class="overlay-clock-digits">00:00:00</span>
+      </div>
+    </div>
+  </body>
+</html>

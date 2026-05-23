@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>⏱ Premium Presentation Timer</title>
+    <!-- Use Google Fonts Outfit, Inter, Bebas Neue, Share Tech Mono, Orbitron, Chakra Petch, Roboto Mono, Space Mono, JetBrains Mono, Source Code Pro for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Source+Code+Pro:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="main.js" defer></script>
+  </head>
+
+  <body>
+    <div class="glass-bg-deco1"></div>
+    <div class="glass-bg-deco2"></div>
+    
+    <main class="app-container">
+      <!-- Title & Header Bar -->
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-icon">⏱</span>
+          <div class="brand-text">
+            <h1>Premium Timer</h1>
+            <p>Presentation Control Center</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="btn-open-settings" class="btn-icon" title="Settings (Cmd + ,)" aria-label="Open settings">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-gear"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="dashboard-grid">
+        <!-- Left Column: Timer + Slide Control stacked -->
+        <div class="left-column">
+        <section class="card timer-visual-card">
+          <!-- Real-Time Clock Quick Toggle Button -->
+          <div class="timer-left-top-actions">
+            <button id="btn-toggle-clock" class="btn-toggle-widget" title="현재시간 오버레이 표시 토글" aria-label="Toggle Real-Time Clock">
+              <span class="widget-icon">⏰</span>
+              <span class="widget-status-dot"></span>
+            </button>
+          </div>
+
+          <!-- NDI & IP Timer Output Quick Toggle Buttons Stack -->
+          <div class="timer-right-top-actions">
+            <button id="btn-toggle-ndi" class="btn-toggle-widget ndi-toggle" title="NDI 송출 On/Off" aria-label="Toggle NDI Output">
+              <span class="widget-icon">📡</span>
+              <span class="widget-status-dot ndi-dot"></span>
+            </button>
+            <button id="btn-toggle-ip-viewer" class="btn-toggle-widget ip-viewer-toggle" title="IP Web Overlay On/Off" aria-label="Toggle IP Web Overlay">
+              <span class="widget-icon">🌐</span>
+              <span class="widget-status-dot ip-viewer-dot"></span>
+            </button>
+          </div>
+
+          <div class="timer-display-wrapper">
+            <!-- Progress Gauge Ring -->
+            <svg class="progress-ring" width="220" height="220">
+              <circle class="progress-ring-track" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="transparent" r="100" cx="110" cy="110" />
+              <circle id="timer-progress-bar" class="progress-ring-bar" stroke="var(--accent-color, #3b82f6)" stroke-width="10" stroke-linecap="round" fill="transparent" r="100" cx="110" cy="110" />
+            </svg>
+            <div class="timer-time-container">
+              <span id="timer-text" class="timer-digits">01:00</span>
+              <span id="timer-state-label" class="timer-state-text">READY</span>
+            </div>
+          </div>
+
+          <!-- Main Actions -->
+          <div class="timer-actions">
+            <button id="btn-start-pause" class="btn-primary">
+              <span class="btn-icon-label">▶</span> <span id="lbl-start-pause">Start</span>
+            </button>
+            <button id="btn-reset" class="btn-secondary">
+              <span>↻</span> Reset
+            </button>
+          </div>
+
+          <!-- Quick Increments & Presets -->
+          <div class="quick-increments">
+            <button class="btn-chip" data-time="30">+30s</button>
+            <button class="btn-chip" data-time="60">+1m</button>
+            <button class="btn-chip" data-time="120">+2m</button>
+            <button class="btn-chip" data-time="180">+3m</button>
+            
+            <button class="btn-preset active" data-seconds="60">1m</button>
+            <button class="btn-preset" data-seconds="120">2m</button>
+            <button class="btn-preset" data-seconds="180">3m</button>
+            <button class="btn-preset" data-seconds="300">5m</button>
+          </div>
+        </section>
+
+        <!-- Compact Slide Controller (below timer) -->
+        <section class="card ppt-control-card-compact">
+          <div class="ppt-compact-header">
+            <span class="ppt-compact-title">🎛 Slide</span>
+            <span id="ppt-status-dot" class="ppt-status-dot" title="No Active App"></span>
+            <span id="ppt-active-app" class="ppt-compact-app-name">Detecting...</span>
+          </div>
+          <div class="ppt-compact-nav">
+            <button id="btn-ppt-prev" class="btn-ppt-compact" title="Previous Slide (◀)">◀ Prev</button>
+            <button id="btn-ppt-next" class="btn-ppt-compact primary" title="Next Slide (▶)">Next ▶</button>
+          </div>
+        </section>
+        </div>
+
+        <!-- Right Column: Panel Settings, Presets, Displays, Alerts -->
+        <div class="control-column">
+          <!-- Custom Set Card -->
+          <section class="card time-setup-card">
+            <h2>⏱ Custom Time Picker</h2>
+            
+            <div class="custom-time-picker">
+              <div class="picker-group">
+                <input type="number" id="input-hours" min="0" max="99" value="0" aria-label="Hours" />
+                <span>h</span>
+              </div>
+              <div class="picker-sep">:</div>
+              <div class="picker-group">
+                <input type="number" id="input-minutes" min="0" max="59" value="1" aria-label="Minutes" />
+                <span>m</span>
+              </div>
+              <div class="picker-sep">:</div>
+              <div class="picker-group">
+                <input type="number" id="input-seconds" min="0" max="59" value="0" aria-label="Seconds" />
+                <span>s</span>
+              </div>
+              <button id="btn-apply-custom-time" class="btn-small">Apply</button>
+            </div>
+          </section>
+
+          <!-- Display & Clickthrough Control Card -->
+          <section class="card display-setup-card">
+            <h2>🖥 Overlay Screen Control</h2>
+            <div class="control-row overlay-layer-toggles">
+              <div class="toggle-control">
+                <span class="toggle-label">⏱ Timer</span>
+                <label class="switch">
+                  <input type="checkbox" id="chk-overlay-timer" checked />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="toggle-control">
+                <span class="toggle-label">⏰ Clock</span>
+                <label class="switch">
+                  <input type="checkbox" id="chk-overlay-clock" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="toggle-control">
+                <span class="toggle-label">💬 Notice</span>
+                <label class="switch">
+                  <input type="checkbox" id="chk-overlay-notice" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="toggle-control">
+                <span class="toggle-label" title="Allows clicks to pass through overlay window">🖱 Clickthrough</span>
+                <label class="switch">
+                  <input type="checkbox" id="chk-overlay-clickthrough" checked />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="monitor-select-group">
+              <label for="select-monitor" class="field-label">Target Screen</label>
+              <div class="select-with-refresh">
+                <select id="select-monitor">
+                  <option value="primary">Scanning displays...</option>
+                </select>
+                <button id="btn-refresh-monitors" class="btn-refresh" title="Rescan Monitors" aria-label="Rescan monitors">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-refresh"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Live Announcement Broadcaster -->
+          <section class="card notification-card">
+            <h2>💬 Live Announcement Broadcaster</h2>
+            <div class="announce-field-group">
+              <input type="text" id="input-announce" placeholder="Type notice to project on screen... (e.g. 5 minutes left!)" aria-label="Announcement text" />
+              <div class="announce-buttons">
+                <button id="btn-send-announce" class="btn-action">Broadcast</button>
+                <button id="btn-clear-announce" class="btn-text">Clear</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- 3-Tab Settings Dialog Modal -->
+    <dialog id="settings-dialog" class="settings-dialog">
+      <div class="dialog-header">
+        <h2>🛠 Premium Preferences</h2>
+        <button id="btn-close-settings" class="btn-close-dialog" aria-label="Close preferences">✕</button>
+      </div>
+
+      <!-- Tab Navigation -->
+      <nav class="settings-tabs" aria-label="Preferences Tabs">
+        <button class="tab-btn active" data-tab="tab-timer">🕒 Timer Screen</button>
+        <button class="tab-btn" data-tab="tab-clock">⏰ Real-Time Clock</button>
+        <button class="tab-btn" data-tab="tab-notify">💬 Notice Board</button>
+        <button class="tab-btn" data-tab="tab-chime">🔔 Synthetic Chime</button>
+        <button class="tab-btn" data-tab="tab-ppt">🎛 Presentation</button>
+        <button class="tab-btn" data-tab="tab-ndi">📡 NDI Output</button>
+        <button class="tab-btn" data-tab="tab-web">🌐 Web Viewer</button>
+      </nav>
+
+      <!-- Dialog Content Containers -->
+      <div class="dialog-body">
+        <!-- TAB 1: Timer Settings -->
+        <div id="tab-timer" class="tab-pane active">
+          <fieldset class="pref-group">
+            <legend class="section-title">Overlay Clock Position (3x3 Grid)</legend>
+            <div class="grid-3x3" id="timer-position-grid">
+              <button type="button" class="grid-cell" data-pos="top-left" title="Top Left"></button>
+              <button type="button" class="grid-cell" data-pos="top-center" title="Top Center"></button>
+              <button type="button" class="grid-cell" data-pos="top-right" title="Top Right"></button>
+              <button type="button" class="grid-cell" data-pos="center-left" title="Center Left"></button>
+              <button type="button" class="grid-cell" data-pos="center-center" title="Center Center"></button>
+              <button type="button" class="grid-cell" data-pos="center-right" title="Center Right"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-left" title="Bottom Left"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-center" title="Bottom Center"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-right" title="Bottom Right"></button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Clock Background Color</legend>
+            <div class="color-picker-container">
+              <div class="preset-colors" id="timer-bg-presets">
+                <button type="button" class="color-chip active" data-color="#0a0f1a" style="background-color: #0a0f1a;" title="Deep Space"></button>
+                <button type="button" class="color-chip" data-color="#22252c" style="background-color: #22252c;" title="Slate Gray"></button>
+                <button type="button" class="color-chip" data-color="#2e0b0b" style="background-color: #2e0b0b;" title="Crimson Midnight"></button>
+                <button type="button" class="color-chip" data-color="#092215" style="background-color: #092215;" title="Emerald Forest"></button>
+                <button type="button" class="color-chip" data-color="#1d0a26" style="background-color: #1d0a26;" title="Royal Navy"></button>
+                <button type="button" class="color-chip" data-color="#ffffff" style="background-color: #ffffff; border: 1px solid rgba(255,255,255,0.4);" title="Pure Frost"></button>
+              </div>
+              <div class="custom-color-wrapper">
+                <label for="timer-bg-color" class="custom-color-label">🎨 Custom:</label>
+                <input type="color" id="timer-bg-color" value="#0a0f1a" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Premium Color Theme</legend>
+            <div class="theme-selection-grid" id="timer-theme-grid">
+              <button type="button" class="theme-chip active" data-theme="blue" title="Cyber Neon Blue">
+                <span class="theme-color-preview preview-blue"></span>
+                <span class="theme-label-name">Cyber Blue</span>
+              </button>
+              <button type="button" class="theme-chip" data-theme="gold" title="Royal Gold & Champagne">
+                <span class="theme-color-preview preview-gold"></span>
+                <span class="theme-label-name">Royal Gold</span>
+              </button>
+              <button type="button" class="theme-chip" data-theme="rose" title="Aurora Rosewood">
+                <span class="theme-color-preview preview-rose"></span>
+                <span class="theme-label-name">Aurora Rose</span>
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Timer Font Face</legend>
+            <div class="font-selection-grid" id="timer-font-grid">
+              <button type="button" class="font-chip active" data-font="Outfit" style="font-family: 'Outfit', sans-serif;">Outfit</button>
+              <button type="button" class="font-chip" data-font="Inter" style="font-family: 'Inter', sans-serif;">Inter</button>
+              <button type="button" class="font-chip" data-font="Bebas Neue" style="font-family: 'Bebas Neue', sans-serif; font-size: 1.1em; font-weight: 400;">Bebas Neue</button>
+              <button type="button" class="font-chip" data-font="Share Tech Mono" style="font-family: 'Share Tech Mono', monospace;">Share Tech</button>
+              <button type="button" class="font-chip" data-font="Orbitron" style="font-family: 'Orbitron', sans-serif;">Orbitron</button>
+              <button type="button" class="font-chip" data-font="Chakra Petch" style="font-family: 'Chakra Petch', sans-serif;">Chakra Petch</button>
+              <button type="button" class="font-chip" data-font="Roboto Mono" style="font-family: 'Roboto Mono', monospace;">Roboto Mono</button>
+              <button type="button" class="font-chip" data-font="Space Mono" style="font-family: 'Space Mono', monospace;">Space Mono</button>
+              <button type="button" class="font-chip" data-font="JetBrains Mono" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9em;">JetBrains Mono</button>
+              <button type="button" class="font-chip" data-font="Source Code Pro" style="font-family: 'Source Code Pro', monospace; font-size: 0.9em;">Source Code Pro</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Geometry Fine-tuning</legend>
+            <div class="slider-control">
+              <label for="timer-font-size" class="slider-label">Timer Font Size (<span id="lbl-timer-font-size">45</span>px)</label>
+              <input type="range" id="timer-font-size" min="20" max="250" step="5" value="45" />
+            </div>
+
+            <div class="slider-control">
+              <label for="timer-bg-opacity" class="slider-label">Clock BG Opacity (<span id="lbl-timer-bg-opacity">68</span>%)</label>
+              <input type="range" id="timer-bg-opacity" min="0" max="100" step="5" value="68" />
+            </div>
+            
+            <div class="range-inputs">
+              <div class="range-field">
+                <label for="timer-offset-x">Offset X (px)</label>
+                <input type="number" id="timer-offset-x" value="20" step="5" />
+              </div>
+              <div class="range-field">
+                <label for="timer-offset-y">Offset Y (px)</label>
+                <input type="number" id="timer-offset-y" value="20" step="5" />
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- TAB 1-2: Real-Time Clock Settings -->
+        <div id="tab-clock" class="tab-pane">
+          <fieldset class="pref-group">
+            <legend class="section-title">Overlay Clock Position (3x3 Grid)</legend>
+            <div class="grid-3x3" id="clock-position-grid">
+              <button type="button" class="grid-cell" data-pos="top-left" title="Top Left"></button>
+              <button type="button" class="grid-cell" data-pos="top-center" title="Top Center"></button>
+              <button type="button" class="grid-cell" data-pos="top-right" title="Top Right"></button>
+              <button type="button" class="grid-cell" data-pos="center-left" title="Center Left"></button>
+              <button type="button" class="grid-cell" data-pos="center-center" title="Center Center"></button>
+              <button type="button" class="grid-cell" data-pos="center-right" title="Center Right"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-left" title="Bottom Left"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-center" title="Bottom Center"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-right" title="Bottom Right"></button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Clock Background Color</legend>
+            <div class="color-picker-container">
+              <div class="preset-colors" id="clock-bg-presets">
+                <button type="button" class="color-chip active" data-color="#0a0f1a" style="background-color: #0a0f1a;" title="Deep Space"></button>
+                <button type="button" class="color-chip" data-color="#22252c" style="background-color: #22252c;" title="Slate Gray"></button>
+                <button type="button" class="color-chip" data-color="#2e0b0b" style="background-color: #2e0b0b;" title="Crimson Midnight"></button>
+                <button type="button" class="color-chip" data-color="#092215" style="background-color: #092215;" title="Emerald Forest"></button>
+                <button type="button" class="color-chip" data-color="#1d0a26" style="background-color: #1d0a26;" title="Royal Navy"></button>
+                <button type="button" class="color-chip" data-color="#ffffff" style="background-color: #ffffff; border: 1px solid rgba(255,255,255,0.4);" title="Pure Frost"></button>
+              </div>
+              <div class="custom-color-wrapper">
+                <label for="clock-bg-color" class="custom-color-label">🎨 Custom:</label>
+                <input type="color" id="clock-bg-color" value="#0a0f1a" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Premium Color Theme</legend>
+            <div class="theme-selection-grid" id="clock-theme-grid">
+              <button type="button" class="theme-chip active" data-theme="blue" title="Cyber Neon Blue">
+                <span class="theme-color-preview preview-blue"></span>
+                <span class="theme-label-name">Cyber Blue</span>
+              </button>
+              <button type="button" class="theme-chip" data-theme="gold" title="Royal Gold & Champagne">
+                <span class="theme-color-preview preview-gold"></span>
+                <span class="theme-label-name">Royal Gold</span>
+              </button>
+              <button type="button" class="theme-chip" data-theme="rose" title="Aurora Rosewood">
+                <span class="theme-color-preview preview-rose"></span>
+                <span class="theme-label-name">Aurora Rose</span>
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Clock Font Face</legend>
+            <div class="font-selection-grid" id="clock-font-grid">
+              <button type="button" class="font-chip active" data-font="Outfit" style="font-family: 'Outfit', sans-serif;">Outfit</button>
+              <button type="button" class="font-chip" data-font="Inter" style="font-family: 'Inter', sans-serif;">Inter</button>
+              <button type="button" class="font-chip" data-font="Bebas Neue" style="font-family: 'Bebas Neue', sans-serif; font-size: 1.1em; font-weight: 400;">Bebas Neue</button>
+              <button type="button" class="font-chip" data-font="Share Tech Mono" style="font-family: 'Share Tech Mono', monospace;">Share Tech</button>
+              <button type="button" class="font-chip" data-font="Orbitron" style="font-family: 'Orbitron', sans-serif;">Orbitron</button>
+              <button type="button" class="font-chip" data-font="Chakra Petch" style="font-family: 'Chakra Petch', sans-serif;">Chakra Petch</button>
+              <button type="button" class="font-chip" data-font="Roboto Mono" style="font-family: 'Roboto Mono', monospace;">Roboto Mono</button>
+              <button type="button" class="font-chip" data-font="Space Mono" style="font-family: 'Space Mono', monospace;">Space Mono</button>
+              <button type="button" class="font-chip" data-font="JetBrains Mono" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9em;">JetBrains Mono</button>
+              <button type="button" class="font-chip" data-font="Source Code Pro" style="font-family: 'Source Code Pro', monospace; font-size: 0.9em;">Source Code Pro</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Geometry Fine-tuning</legend>
+            <div class="slider-control">
+              <label for="clock-font-size" class="slider-label">Clock Font Size (<span id="lbl-clock-font-size">40</span>px)</label>
+              <input type="range" id="clock-font-size" min="20" max="250" step="5" value="40" />
+            </div>
+
+            <div class="slider-control">
+              <label for="clock-bg-opacity" class="slider-label">Clock BG Opacity (<span id="lbl-clock-bg-opacity">68</span>%)</label>
+              <input type="range" id="clock-bg-opacity" min="0" max="100" step="5" value="68" />
+            </div>
+
+            <div class="toggle-control inline-toggle" style="margin-bottom: 12px;">
+              <span class="toggle-label">Use 24-Hour Format</span>
+              <label class="switch">
+                <input type="checkbox" id="chk-clock-24h" checked />
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="toggle-control inline-toggle" style="margin-bottom: 16px;">
+              <span class="toggle-label">Show Seconds Digit</span>
+              <label class="switch">
+                <input type="checkbox" id="chk-clock-seconds" checked />
+                <span class="slider round"></span>
+              </label>
+            </div>
+            
+            <div class="range-inputs">
+              <div class="range-field">
+                <label for="clock-offset-x">Offset X (px)</label>
+                <input type="number" id="clock-offset-x" value="20" step="5" />
+              </div>
+              <div class="range-field">
+                <label for="clock-offset-y">Offset Y (px)</label>
+                <input type="number" id="clock-offset-y" value="20" step="5" />
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- TAB 2: Notice Board Settings -->
+        <div id="tab-notify" class="tab-pane">
+          <fieldset class="pref-group">
+            <legend class="section-title">Notice Board Position (3x3 Grid)</legend>
+            <div class="grid-3x3" id="notify-position-grid">
+              <button type="button" class="grid-cell" data-pos="top-left" title="Top Left"></button>
+              <button type="button" class="grid-cell" data-pos="top-center" title="Top Center"></button>
+              <button type="button" class="grid-cell" data-pos="top-right" title="Top Right"></button>
+              <button type="button" class="grid-cell" data-pos="center-left" title="Center Left"></button>
+              <button type="button" class="grid-cell" data-pos="center-center" title="Center Center"></button>
+              <button type="button" class="grid-cell" data-pos="center-right" title="Center Right"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-left" title="Bottom Left"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-center" title="Bottom Center"></button>
+              <button type="button" class="grid-cell" data-pos="bottom-right" title="Bottom Right"></button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Notice Background Color</legend>
+            <div class="color-picker-container">
+              <div class="preset-colors" id="notify-bg-presets">
+                <button type="button" class="color-chip active" data-color="#0a0f1a" style="background-color: #0a0f1a;" title="Deep Space"></button>
+                <button type="button" class="color-chip" data-color="#22252c" style="background-color: #22252c;" title="Slate Gray"></button>
+                <button type="button" class="color-chip" data-color="#2e0b0b" style="background-color: #2e0b0b;" title="Crimson Midnight"></button>
+                <button type="button" class="color-chip" data-color="#092215" style="background-color: #092215;" title="Emerald Forest"></button>
+                <button type="button" class="color-chip" data-color="#1d0a26" style="background-color: #1d0a26;" title="Royal Navy"></button>
+                <button type="button" class="color-chip" data-color="#ffffff" style="background-color: #ffffff; border: 1px solid rgba(255,255,255,0.4);" title="Pure Frost"></button>
+              </div>
+              <div class="custom-color-wrapper">
+                <label for="notify-bg-color" class="custom-color-label">🎨 Custom:</label>
+                <input type="color" id="notify-bg-color" value="#0a0f1a" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Style & Dimensioning</legend>
+            <div class="slider-control">
+              <label for="notify-scale" class="slider-label">Notice Size Scale (<span id="lbl-notify-scale">1.0</span>x)</label>
+              <input type="range" id="notify-scale" min="0.5" max="2.5" step="0.1" value="1.0" />
+            </div>
+
+            <div class="toggle-control inline-toggle">
+              <span class="toggle-label">Background Acrylic Blur</span>
+              <label class="switch">
+                <input type="checkbox" id="chk-notify-blur" checked />
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="slider-control">
+              <label for="notify-bg-opacity" class="slider-label">Background Opacity (<span id="lbl-notify-bg-opacity">80</span>%)</label>
+              <input type="range" id="notify-bg-opacity" min="0" max="100" step="5" value="80" />
+            </div>
+            
+            <div class="range-inputs">
+              <div class="range-field">
+                <label for="notify-offset-x">Offset X (px)</label>
+                <input type="number" id="notify-offset-x" value="20" step="5" />
+              </div>
+              <div class="range-field">
+                <label for="notify-offset-y">Offset Y (px)</label>
+                <input type="number" id="notify-offset-y" value="20" step="5" />
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- TAB 3: Synthetic Chime Settings -->
+        <div id="tab-chime" class="tab-pane">
+          <fieldset class="pref-group">
+            <legend class="section-title">Chime Trigger Checkpoints</legend>
+            
+            <div class="chime-trigger-row">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="chk-chime-warning" checked />
+                <span class="checkmark"></span>
+                <span class="chime-label-text">Warning Chime at</span>
+              </label>
+              <div class="chime-time-input-group">
+                <input type="number" id="input-chime-warning-time" min="1" max="999" value="60" />
+                <span class="input-unit">s remaining</span>
+              </div>
+              <span class="chime-desc">(Perfect Double Bell)</span>
+            </div>
+            <!-- 1차 경고 상세 연출 제어 패널 -->
+            <div class="chime-detail-row" id="chime-warning-details">
+              <div class="detail-control">
+                <label for="select-chime-warning-sound" class="detail-label">🎵 Chime Sound</label>
+                <select id="select-chime-warning-sound">
+                  <option value="synth">Synthetic Harmony</option>
+                  <option value="wav">Zero-Latency WAV</option>
+                  <option value="muted">Muted (Silent)</option>
+                </select>
+              </div>
+              <div class="detail-control">
+                <label for="color-chime-warning-color" class="detail-label">🎨 Alert Color</label>
+                <input type="color" id="color-chime-warning-color" value="#eab308" />
+              </div>
+              <div class="detail-control">
+                <label class="custom-checkbox detail-checkbox">
+                  <input type="checkbox" id="chk-chime-warning-blink" />
+                  <span class="checkmark"></span>
+                  <span class="detail-label-text">Pulse Blink</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="chime-trigger-row">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="chk-chime-tension" checked />
+                <span class="checkmark"></span>
+                <span class="chime-label-text">Tension Chime at</span>
+              </label>
+              <div class="chime-time-input-group">
+                <input type="number" id="input-chime-tension-time" min="1" max="999" value="30" />
+                <span class="input-unit">s remaining</span>
+              </div>
+              <span class="chime-desc">(Perfect Consonance)</span>
+            </div>
+            <!-- 2차 경고 상세 연출 제어 패널 -->
+            <div class="chime-detail-row" id="chime-tension-details">
+              <div class="detail-control">
+                <label for="select-chime-tension-sound" class="detail-label">🎵 Chime Sound</label>
+                <select id="select-chime-tension-sound">
+                  <option value="synth">Synthetic Harmony</option>
+                  <option value="wav">Zero-Latency WAV</option>
+                  <option value="muted">Muted (Silent)</option>
+                </select>
+              </div>
+              <div class="detail-control">
+                <label for="color-chime-tension-color" class="detail-label">🎨 Alert Color</label>
+                <input type="color" id="color-chime-tension-color" value="#f97316" />
+              </div>
+              <div class="detail-control">
+                <label class="custom-checkbox detail-checkbox">
+                  <input type="checkbox" id="chk-chime-tension-blink" />
+                  <span class="checkmark"></span>
+                  <span class="detail-label-text">Pulse Blink</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="chime-trigger-row">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="chk-chime-urgent" checked />
+                <span class="checkmark"></span>
+                <span class="chime-label-text">Urgent Alarm at</span>
+              </label>
+              <div class="chime-time-input-group">
+                <input type="number" id="input-chime-urgent-time" min="1" max="999" value="10" />
+                <span class="input-unit">s remaining</span>
+              </div>
+              <span class="chime-desc">(Tritone Dissonance)</span>
+            </div>
+            <!-- 3차 경고 상세 연출 제어 패널 -->
+            <div class="chime-detail-row" id="chime-urgent-details">
+              <div class="detail-control">
+                <label for="select-chime-urgent-sound" class="detail-label">🎵 Chime Sound</label>
+                <select id="select-chime-urgent-sound">
+                  <option value="synth">Synthetic Harmony</option>
+                  <option value="wav">Zero-Latency WAV</option>
+                  <option value="muted">Muted (Silent)</option>
+                </select>
+              </div>
+              <div class="detail-control">
+                <label for="color-chime-urgent-color" class="detail-label">🎨 Alert Color</label>
+                <input type="color" id="color-chime-urgent-color" value="#ef4444" />
+              </div>
+              <div class="detail-control">
+                <label class="custom-checkbox detail-checkbox">
+                  <input type="checkbox" id="chk-chime-urgent-blink" checked />
+                  <span class="checkmark"></span>
+                  <span class="detail-label-text">Pulse Blink</span>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Synthesis Control</legend>
+            <div class="slider-control">
+              <label for="chime-volume" class="slider-label">Master Chime Volume (<span id="lbl-chime-volume">80</span>%)</label>
+              <input type="range" id="chime-volume" min="0" max="100" step="5" value="80" />
+            </div>
+            
+            <div class="audio-test-row">
+              <button type="button" id="btn-test-chime-warning" class="btn-small btn-audio-test">Test Warning Chime</button>
+              <button type="button" id="btn-test-chime-tension" class="btn-small btn-audio-test">Test Tension Chime</button>
+              <button type="button" id="btn-test-chime-urgent" class="btn-small btn-audio-test">Test Urgent Chime</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- TAB 5: Presentation Controller -->
+        <div id="tab-ppt" class="tab-pane">
+          <fieldset class="pref-group">
+            <legend class="section-title">App Detection</legend>
+            <div class="ppt-settings-status-row">
+              <span class="ppt-settings-label">Active App:</span>
+              <span id="ppt-settings-app-name" class="ppt-settings-app-val">Detecting...</span>
+              <button id="btn-detect-ppt" class="btn-detect-chip" title="Scan Active Presentation Application" aria-label="Detect active presentation app">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-refresh-small"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span>Scan App</span>
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Slide Show Control</legend>
+            <div class="ppt-settings-actions">
+              <button id="btn-ppt-start" class="btn-ppt-action" title="Start Slide Show">
+                <span class="ppt-btn-icon">▶</span> Start Show
+              </button>
+              <button id="btn-ppt-stop" class="btn-ppt-action secondary" title="Stop Slide Show">
+                <span class="ppt-btn-icon">■</span> End Show
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Jump to Slide</legend>
+            <div class="ppt-jump-control">
+              <div class="jump-input-group">
+                <input type="number" id="input-ppt-slide" min="1" max="999" value="1" aria-label="Slide index to jump to" />
+                <button id="btn-ppt-jump" class="btn-action-small">Go</button>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- NDI Output Settings Tab -->
+        <div id="tab-ndi" class="tab-pane">
+          <fieldset class="pref-group">
+            <legend class="section-title">NDI Source Settings</legend>
+            <div class="pref-row">
+              <label for="input-ndi-name" class="field-label">Source Name</label>
+              <input type="text" id="input-ndi-name" value="Presentation Timer" placeholder="NDI source name" class="pref-input" />
+            </div>
+            <div class="pref-row">
+              <label for="select-ndi-resolution" class="field-label">Resolution</label>
+              <select id="select-ndi-resolution" class="pref-select">
+                <option value="1920x1080">1920 × 1080 (Full HD)</option>
+                <option value="1280x720" selected>1280 × 720 (HD)</option>
+                <option value="960x540">960 × 540 (qHD)</option>
+                <option value="640x480">640 × 480 (SD - Low CPU)</option>
+                <option value="480x360">480 × 360 (VGA - Lowest CPU)</option>
+              </select>
+            </div>
+            <div class="pref-row">
+              <label for="select-ndi-fps" class="field-label">Frame Rate</label>
+              <select id="select-ndi-fps" class="pref-select">
+                <option value="30" selected>30 fps</option>
+                <option value="15">15 fps</option>
+                <option value="10">10 fps</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <!-- NDI Timer Configuration -->
+          <fieldset class="pref-group">
+            <legend class="section-title">📡 NDI Timer Settings</legend>
+            <div class="pref-row">
+              <label for="checkbox-ndi-timer-visible" class="field-label">Show Timer on NDI</label>
+              <input type="checkbox" id="checkbox-ndi-timer-visible" checked style="width: 20px; height: 20px; accent-color: var(--accent-color);" />
+            </div>
+            <div class="pref-row">
+              <label for="checkbox-ndi-alpha-enabled" class="field-label">Enable Transparent Background (Alpha)</label>
+              <input type="checkbox" id="checkbox-ndi-alpha-enabled" checked style="width: 20px; height: 20px; accent-color: var(--accent-color);" />
+            </div>
+            <div class="slider-control">
+              <div class="slider-label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="input-ndi-timer-size" class="slider-label" style="margin-bottom: 0;">Font Size</label>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <input type="number" id="input-ndi-timer-size-num" min="20" max="3000" value="45" class="pref-num-input" style="width: 60px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 0.9em; text-align: center;" />
+                  <span style="font-size: 0.9em; color: var(--text-muted);">px</span>
+                </div>
+              </div>
+              <input type="range" id="input-ndi-timer-size" min="20" max="3000" step="10" value="45" style="width: 100%;" />
+            </div>
+            <div class="pref-row-vertical" style="margin-top: 15px;">
+              <span class="field-label" style="margin-bottom: 8px; display: block;">Font Family</span>
+              <div class="font-selection-grid" id="ndi-timer-font-grid">
+                <button type="button" class="font-chip active" data-font="Outfit" style="font-family: 'Outfit', sans-serif;">Outfit</button>
+                <button type="button" class="font-chip" data-font="Inter" style="font-family: 'Inter', sans-serif;">Inter</button>
+                <button type="button" class="font-chip" data-font="Bebas Neue" style="font-family: 'Bebas Neue', sans-serif;">Bebas Neue</button>
+                <button type="button" class="font-chip" data-font="Orbitron" style="font-family: 'Orbitron', sans-serif;">Orbitron</button>
+                <button type="button" class="font-chip" data-font="Roboto Mono" style="font-family: 'Roboto Mono', monospace;">Roboto Mono</button>
+              </div>
+            </div>
+            <div class="pref-row-vertical" style="margin-top: 15px;">
+              <span class="field-label" style="margin-bottom: 8px; display: block;">NDI Timer Position</span>
+              <div class="grid-3x3" id="ndi-timer-position-grid">
+                <button type="button" class="grid-cell" data-pos="top-left" title="Top Left"></button>
+                <button type="button" class="grid-cell" data-pos="top-center" title="Top Center"></button>
+                <button type="button" class="grid-cell" data-pos="top-right" title="Top Right"></button>
+                <button type="button" class="grid-cell" data-pos="center-left" title="Center Left"></button>
+                <button type="button" class="grid-cell" data-pos="center-center" title="Center Center"></button>
+                <button type="button" class="grid-cell" data-pos="center-right" title="Center Right"></button>
+                <button type="button" class="grid-cell" data-pos="bottom-left" title="Bottom Left"></button>
+                <button type="button" class="grid-cell" data-pos="bottom-center" title="Bottom Center"></button>
+                <button type="button" class="grid-cell" data-pos="bottom-right" title="Bottom Right"></button>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- NDI Clock Configuration -->
+          <fieldset class="pref-group">
+            <legend class="section-title">📡 NDI Clock Settings</legend>
+            <div class="pref-row">
+              <label for="checkbox-ndi-clock-visible" class="field-label">Show Clock on NDI</label>
+              <input type="checkbox" id="checkbox-ndi-clock-visible" style="width: 20px; height: 20px; accent-color: var(--accent-color);" />
+            </div>
+            <div class="slider-control">
+              <div class="slider-label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="input-ndi-clock-size" class="slider-label" style="margin-bottom: 0;">Font Size</label>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <input type="number" id="input-ndi-clock-size-num" min="20" max="3000" value="40" class="pref-num-input" style="width: 60px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 0.9em; text-align: center;" />
+                  <span style="font-size: 0.9em; color: var(--text-muted);">px</span>
+                </div>
+              </div>
+              <input type="range" id="input-ndi-clock-size" min="20" max="3000" step="10" value="40" style="width: 100%;" />
+            </div>
+            <div class="pref-row-vertical" style="margin-top: 15px;">
+              <span class="field-label" style="margin-bottom: 8px; display: block;">NDI Clock Position</span>
+              <div class="grid-3x3" id="ndi-clock-position-grid">
+                <button type="button" class="grid-cell" data-pos="top-left" title="Top Left"></button>
+                <button type="button" class="grid-cell" data-pos="top-center" title="Top Center"></button>
+                <button type="button" class="grid-cell" data-pos="top-right" title="Top Right"></button>
+                <button type="button" class="grid-cell" data-pos="center-left" title="Center Left"></button>
+                <button type="button" class="grid-cell" data-pos="center-center" title="Center Center"></button>
+                <button type="button" class="grid-cell" data-pos="center-right" title="Center Right"></button>
+                <button type="button" class="grid-cell" data-pos="bottom-left" title="Bottom Left"></button>
+                <button type="button" class="grid-cell" data-pos="bottom-center" title="Bottom Center"></button>
+                <button type="button" class="grid-cell" data-pos="bottom-right" title="Bottom Right"></button>
+              </div>
+            </div>
+          </fieldset>
+          
+          <fieldset class="pref-group">
+            <legend class="section-title">NDI Status</legend>
+            <div class="ndi-status-display">
+              <span class="ndi-status-label">Status:</span>
+              <span id="ndi-status-text" class="ndi-status-value">⚫ Stopped</span>
+            </div>
+            <div class="ndi-settings-actions">
+              <button id="btn-ndi-start" class="btn-ppt-action">
+                <span class="ppt-btn-icon">📡</span> Start NDI
+              </button>
+              <button id="btn-ndi-stop" class="btn-ppt-action secondary">
+                <span class="ppt-btn-icon">⏹</span> Stop NDI
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pref-group">
+            <legend class="section-title">Notes</legend>
+            <p class="pref-note">• NDI 수신: vMix, OBS (NDI Plugin), NDI Studio Monitor 등에서 확인 가능</p>
+            <p class="pref-note">• NDI 송출은 메인 오버레이 창의 테마, 폰트, 투명도, 위치 설정을 실시간으로 반영하여 송출합니다</p>
+            <p class="pref-note">• 알파 채널이 포함된 RGBA로 송출되어 자막 합성 가능</p>
+            <p class="pref-note">• NDI SDK가 시스템에 설치되어 있어야 합니다</p>
+          </fieldset>
+        </div>
+
+        <!-- TAB 6: IP Web Viewer Settings -->
+        <div id="tab-web" class="tab-pane">
+          <fieldset class="pref-group">
+            <legend class="section-title">📡 IP Web Overlay (Local Web Viewer)</legend>
+            <p class="pref-note" style="margin-bottom: 12px; line-height: 1.4;">
+              동일한 Wi-Fi 또는 이더넷 로컬 네트워크에 있는 스마트폰, 태블릿, 다른 PC의 브라우저에서 아래의 주소로 접속하면 NDI 대비 대역폭을 99.9% 절약하면서도 초고화질 카운트다운 시간 화면을 실시간으로 감상/모니터링할 수 있습니다.
+            </p>
+            <div class="pref-row">
+              <label for="checkbox-web-enabled" class="field-label">Enable Web Overlay Server</label>
+              <input type="checkbox" id="checkbox-web-enabled" checked style="width: 20px; height: 20px; accent-color: var(--accent-color);" />
+            </div>
+            <div class="pref-row">
+              <label class="field-label">Background Mode (Theme)</label>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="font-chip active" id="btn-web-theme-dark" data-theme="dark" style="padding: 4px 10px; font-size: 0.85em; margin-bottom: 0;">Dark Gradient</button>
+                <button type="button" class="font-chip" id="btn-web-theme-transparent" data-theme="transparent" style="padding: 4px 10px; font-size: 0.85em; margin-bottom: 0;">Transparent (OBS)</button>
+              </div>
+            </div>
+            
+            <div class="slider-control">
+              <div class="slider-label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="input-web-size" class="slider-label" style="margin-bottom: 0;">Font Size</label>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <input type="number" id="input-web-size-num" min="20" max="3000" value="300" class="pref-num-input" style="width: 60px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 0.9em; text-align: center;" />
+                  <span style="font-size: 0.9em; color: var(--text-muted);">px</span>
+                </div>
+              </div>
+              <input type="range" id="input-web-size" min="20" max="3000" step="10" value="300" style="width: 100%;" />
+            </div>
+
+            <div class="pref-row-vertical" style="margin-top: 15px;">
+              <span class="field-label" style="margin-bottom: 8px; display: block;">Font Family</span>
+              <div class="font-selection-grid" id="web-font-grid">
+                <button type="button" class="font-chip active" data-font="Outfit" style="font-family: 'Outfit', sans-serif;">Outfit</button>
+                <button type="button" class="font-chip" data-font="Inter" style="font-family: 'Inter', sans-serif;">Inter</button>
+                <button type="button" class="font-chip" data-font="Bebas Neue" style="font-family: 'Bebas Neue', sans-serif;">Bebas Neue</button>
+                <button type="button" class="font-chip" data-font="Orbitron" style="font-family: 'Orbitron', sans-serif;">Orbitron</button>
+                <button type="button" class="font-chip" data-font="Roboto Mono" style="font-family: 'Roboto Mono', monospace;">Roboto Mono</button>
+              </div>
+            </div>
+
+            <div class="pref-row-vertical" style="margin-top: 15px;">
+              <span class="field-label" style="margin-bottom: 8px; display: block;">Default Text Color</span>
+              <div class="color-presets-row" id="web-color-presets" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button type="button" class="color-chip active" data-color="#ffffff" style="background: #ffffff; border: 1px solid #fff;"></button>
+                <button type="button" class="color-chip" data-color="#3b82f6" style="background: #3b82f6;"></button>
+                <button type="button" class="color-chip" data-color="#22c55e" style="background: #22c55e;"></button>
+                <button type="button" class="color-chip" data-color="#eab308" style="background: #eab308;"></button>
+                <button type="button" class="color-chip" data-color="#f97316" style="background: #f97316;"></button>
+                <button type="button" class="color-chip" data-color="#ef4444" style="background: #ef4444;"></button>
+                <button type="button" class="color-chip" data-color="#ec4899" style="background: #ec4899;"></button>
+                <button type="button" class="color-chip" data-color="#a855f7" style="background: #a855f7;"></button>
+                
+                <div style="position: relative; display: inline-block; width: 28px; height: 28px;">
+                  <input type="color" id="color-web-custom" value="#ffffff" style="opacity: 0; position: absolute; left: 0; top: 0; width: 28px; height: 28px; cursor: pointer; z-index: 10;" />
+                  <button type="button" class="color-chip btn-custom-color" id="btn-web-custom-color" style="background: linear-gradient(45deg, red, orange, yellow, green, blue, purple); border: 1px solid rgba(255,255,255,0.2); position: absolute; left: 0; top: 0; width: 28px; height: 28px; pointer-events: none;" title="Custom Color"></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pref-row-vertical" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px;">
+              <span class="field-label" style="margin-bottom: 8px; display: block;">로컬 원격 뷰어 접속 주소</span>
+              <div id="ip-viewer-link-container" style="display: flex; gap: 8px; align-items: center; width: 100%;">
+                <div id="ip-viewer-address" style="flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 8px 12px; border-radius: 8px; color: var(--accent-color); font-family: monospace; font-size: 0.95em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; user-select: all; cursor: text;">
+                  IP 주소 감지 중...
+                </div>
+                <button type="button" id="btn-copy-ip-viewer-link" class="btn-ppt-action" style="padding: 8px 12px; height: auto; min-height: unset; font-size: 0.9em; flex-shrink: 0; margin-top: 0;">
+                  📋 복사
+                </button>
+              </div>
+              <p class="pref-note" style="margin-top: 6px;">
+                💡 팁: OBS Browser Source 등 방송 프로그램에 <strong>투명 자막</strong>으로 얹으려면 주소 뒤에 <code>?bg=transparent</code>를 붙여서 추가하세요!
+              </p>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      
+      <div class="dialog-footer">
+        <button id="btn-save-settings" class="btn-primary">💾 Save Settings</button>
+      </div>
+    </dialog>
+  </body>
+</html>

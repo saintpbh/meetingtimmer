@@ -1,0 +1,70 @@
+# Custom command permissions for Premium Presentation Timer
+
+default-permissions = [
+  "allow-get-monitors",
+  "allow-move-overlay-to-monitor",
+  "allow-set-overlay-clickthrough",
+  "allow-set-overlay-visible",
+  "allow-share-timer-state",
+  "allow-set-main-content-size",
+  "allow-detect-presentation-app",
+  "allow-control-presentation",
+  "allow-ndi-start-sender",
+  "allow-ndi-stop-sender",
+  "allow-ndi-send-frame"
+]
+
+[[permission]]
+identifier = "allow-get-monitors"
+description = "Allows retrieving all connected physical monitors"
+commands.allow = ["get_monitors"]
+
+[[permission]]
+identifier = "allow-move-overlay-to-monitor"
+description = "Allows positioning and resizing the overlay window onto a target monitor"
+commands.allow = ["move_overlay_to_monitor"]
+
+[[permission]]
+identifier = "allow-set-overlay-clickthrough"
+description = "Allows turning mouse cursor clickthrough behavior on or off"
+commands.allow = ["set_overlay_clickthrough"]
+
+[[permission]]
+identifier = "allow-set-overlay-visible"
+description = "Allows toggling visibility state of the overlay window"
+commands.allow = ["set_overlay_visible"]
+
+[[permission]]
+identifier = "allow-share-timer-state"
+description = "Allows sharing timer tick payload between main and overlay window"
+commands.allow = ["share_timer_state"]
+
+[[permission]]
+identifier = "allow-set-main-content-size"
+description = "Allows dynamically resizing the main window content area to fit the viewport"
+commands.allow = ["set_main_content_size"]
+
+[[permission]]
+identifier = "allow-detect-presentation-app"
+description = "Allows scanning for running presentation applications (PowerPoint, Keynote)"
+commands.allow = ["detect_presentation_app"]
+
+[[permission]]
+identifier = "allow-control-presentation"
+description = "Allows sending remote control commands to PowerPoint or Keynote slide shows"
+commands.allow = ["control_presentation"]
+
+[[permission]]
+identifier = "allow-ndi-start-sender"
+description = "Allows creating and starting an NDI video sender instance"
+commands.allow = ["ndi_start_sender"]
+
+[[permission]]
+identifier = "allow-ndi-stop-sender"
+description = "Allows stopping and destroying the active NDI sender"
+commands.allow = ["ndi_stop_sender"]
+
+[[permission]]
+identifier = "allow-ndi-send-frame"
+description = "Allows sending RGBA video frames to the active NDI sender"
+commands.allow = ["ndi_send_frame"]
