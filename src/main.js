@@ -2078,7 +2078,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (chkC) chkC.checked = false;
       if (chkN) chkN.checked = false;
       invoke('set_overlay_visible', { visible: false }).catch(err => console.error(err));
-      syncTimerWithOverlay(true);
+      syncTimerWithOverlay(true, true);
     }
   });
   
